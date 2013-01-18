@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_add_sprinkler"
+        android:title="@string/menu_add_sprinkler"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    <item android:id="@+id/menu_order"
+        android:title="@string/menu_order"> 
+       <menu>
+           <item
+               android:id="@+id/order_radius"
+               android:title="@string/order_radius" />
+           <item 
+               android:id="@+id/order_flow"
+               android:title="@string/order_flow" />
+       </menu>
+     </item>
+</menu>

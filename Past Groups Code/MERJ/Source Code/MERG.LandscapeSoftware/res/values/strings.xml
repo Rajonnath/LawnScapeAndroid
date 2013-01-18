@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name"></string>
+    <string name="button_erase">Erase</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_set_color">Set Color</string>
+    <string name="button_set_line_width">Set Line Width</string>
+    <string name="label_alpha">Alpha</string>
+    <string name="label_red">Red</string>
+    <string name="label_green">Green</string>
+    <string name="label_blue">Blue</string>
+    <string name="menuitem_clear">Clear</string>
+    <string name="menuitem_color">Color</string>
+    <string name="menuitem_erase">Erase</string>
+    <string name="menuitem_line_width">Line Width</string>
+    <string name="menuitem_save_image">Save Image</string>
+    <string name="message_erase">Erase the drawing?</string>
+    <string name="message_error_saving">
+       There was an error saving the image</string>
+    <string name="message_saved">
+       Your painting has been saved to the Gallery</string>
+    <string name="title_color_dialog">Choose Color</string>
+    <string name="title_line_width_dialog">Choose Line Width</string>
+     <string name="ok">OK</string>
+      <string name="cancel">Cancel</string>
+      <string name="length_prompt">Please Select Length Unit</string>
+      <string name="velocity_prompt">Please Select Velocity Unit</string>
+      <string name="pressure_prompt">Please Select Pressure Unit</string>
+      
+      <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_order">Order</string>
+    <string name="order_radius">Radius</string>
+    <string name="order_flow">Flow</string>
+    <string name="menu_database">Database</string>
+    <string name="menu_sprinklers">Sprinklers</string>
+    <string name="menu_pipes">Pipes</string>
+    <string name="menu_add_sprinkler">Add Sprinkler</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_edit_delete">Edit/Delete</string>
+    <string name="testing">Test</string>
+    <string name="confirm_delete">Delete Sprinkler</string>
+    <string name="confirm_message">        
+        This action will permanently delete sprinkler</string>
+    <string name="confirm_cancel">Cancel</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_model">Model</string>
+    <string name="hint_flow">Flow</string>
+    <string name="hint_price">Price (Example: 15.50)</string>
+    <string name="hint_color">Color</string>
+    <string name="hint_arc">Arc</string>
+    <string name="hint_radius">Radius</string>
+    <string name="errorOk">OK</string>
+    <string name="errorTitle">Insufficient Data</string>
+    <string name="errorMessage">Must complete all fields</string>
+    <string name="button_save">SAVE</string>
+    <string name="button_delete">DELETE</string>
+   
+    <string name="button_edit">EDIT</string>
+    <string name="dollars">$</string>
+    <string name="label_name">Name</string>
+    <string name="label_model">Model</string>
+    <string name="label_flow">Flow</string>
+    <string name="label_price">Price</string>
+    <string name="label_color">Color</string>
+    <string name="label_arc">Arc</string>
+    <string name="label_radius">Radius</string>
+    <string name="title_activity_add_sprinkler">Add Sprinkler</string>
+    <string name="title_activity_view_sprinkler">View Sprinkler</string>
+    <string name="title_activity_master_list">Master List</string>
+    <string name="title_activity_sprinkler_list">Sprinkler List</string>
+      
+      
+      <string-array name="lenth_unit">
+        <item>MilliMeter</item>
+        <item>Inch</item>
+        <item>Foot</item>
+        <item>Meter</item>
+        <item>Kilometer</item>
+        <item>Mile</item>
+       
+    </string-array>
+    
+      <string-array name="velocity_unit">
+        <item>FeetPerSec</item>
+        <item>MeterPerSec</item>
+       
+    </string-array>
+    
+      <string-array name="pressure_unit">
+        <item>PoundPerSquareInchAbsolute</item>
+        <item>BarAbsolute</item>
+        <item>KilopascalsAbsolute</item>
+        <item>PascalsAbsolute</item>
+        <item>KilogramsPerSquareCentimeterAbsolute</item>
+        <item>MegapascalsAbsolute</item>
+        <item>FeetHeadAbsolute</item>
+        <item>TorrAbsolute</item>
+        <item>MilimeterOfMercuryAbsolute</item>
+        <item>PoundPerSquareInchGauge</item>
+        <item>BarGauge</item>
+        <item>KilopascalsGauge</item>
+        <item>PascalsGauge</item>
+        <item>KilogramsPerSquareCentimeterGauge</item>
+        <item>MegapascalsGauge</item>
+        <item>MilimeterOfMercuryGauge</item>
+         <item>MilliMetersOfWaterColumnGauge</item>
+    </string-array>
+      
+      
+</resources>
+

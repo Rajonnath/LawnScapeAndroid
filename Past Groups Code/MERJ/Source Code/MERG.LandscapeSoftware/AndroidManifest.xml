@@ -1,0 +1,77 @@
+<!-- This is an android application for landsacping and water irrigation
+The app allows the user to draw the plan view of a property using lines and curves
+and then be able to place sprinkler on appropriate part of the drawing.
+
+The program then should then calculate required pipes and fitting and placed them on the drawing
+and then calculate pressure drops and other irrigation related types of calculations
+
+This application implementation was started by advance software engineering student group (fall 2012), Midwestern State University
+called MERJ group
+
+MERJ group comprises of 
+
+Timi Dosumu
+Mattew Farmer
+Elizabeth Crow, and
+Kalpana Jambula
+
+The project is expected to be continued by the next group software engineering student
+
+ -->
+
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="merg.landscapesoftware"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+
+    <application
+        android:icon="@drawable/wicad"
+        android:label="@string/app_name"
+        android:theme="@android:style/Holo.ButtonBar" >
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="landscape"
+            
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".MasterList"
+            android:label="@string/title_activity_master_list" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SprinklerList"
+            android:label="@string/title_activity_sprinkler_list" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AddSprinkler"
+            android:label="@string/title_activity_add_sprinkler" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

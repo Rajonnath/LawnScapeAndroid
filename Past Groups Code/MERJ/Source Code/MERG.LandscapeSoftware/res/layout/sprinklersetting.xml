@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="300dp"
+    android:orientation="vertical" >
+    
+    
+     <TableLayout android:id="@+id/tableLayout"
+      android:layout_width="match_parent" 
+      android:layout_height="wrap_content" android:layout_margin="10dp"
+      android:stretchColumns="1">
+      <TableRow android:orientation="horizontal"
+         android:layout_width="match_parent" 
+         android:layout_height="wrap_content">
+         <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Radius" android:gravity="right"
+            android:layout_gravity="center_vertical"/>
+         <SeekBar android:id="@+id/radius"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" android:max="255" 
+            android:paddingLeft="10dp" android:paddingRight="10dp"/>
+      </TableRow>
+      <TableRow android:orientation="horizontal"
+         android:layout_width="match_parent" 
+         android:layout_height="wrap_content">
+         <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="Set Angle" android:gravity="right"
+            android:layout_gravity="center_vertical"/>
+         <SeekBar android:id="@+id/angle"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" android:max="255" 
+            android:paddingLeft="10dp" android:paddingRight="10dp"/>
+      </TableRow>
+      
+      <TableRow android:orientation="horizontal"
+         android:layout_width="match_parent" 
+         android:layout_height="wrap_content">
+         <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="Radius" android:gravity="right"
+            android:layout_gravity="center_vertical"/>
+         <TextView android:id="@+id/radiusText"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" android:max="255" 
+            android:paddingLeft="10dp" android:paddingRight="10dp"/>
+      </TableRow>
+      <TableRow android:orientation="horizontal"
+         android:layout_width="wrap_content" 
+         android:layout_height="wrap_content">
+         <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:text="Angle" android:gravity="right"
+            android:layout_gravity="center_vertical"/>
+         <TextView android:id="@+id/angleText"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" android:max="255" 
+            android:paddingLeft="10dp" android:paddingRight="10dp"/>
+      </TableRow>
+      
+   </TableLayout>
+
+   <LinearLayout android:background="@android:color/white"
+      android:layout_width="match_parent" 
+      android:layout_height="wrap_content" android:layout_margin="10dp">
+      <View android:id="@+id/colorView"
+         android:layout_width="match_parent" 
+         android:layout_height="30dp"/>
+   </LinearLayout>
+   
+   <Button android:id="@+id/setSprinkler"
+      android:layout_width="wrap_content" 
+      android:layout_height="wrap_content"  
+      android:layout_gravity="center_horizontal"
+      android:text="Ok"/>
+
+</LinearLayout>
+
+
+<!-- View for sprinkler setting dialog layout
+ -->

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="0px"
+    android:paddingBottom="2dp"
+    android:background="#ffffff" >
+
+    <TextView
+        android:id="@+id/list_model"
+        android:layout_weight="1"
+        android:gravity="left"
+        android:padding="5dp"
+        android:textColor="#00F"
+        android:textSize="15sp" />
+	<TextView
+        android:id="@+id/list_flow"
+        android:layout_weight="1"
+        android:gravity="left"
+        android:padding="5dp"
+        android:textColor="#00F"
+        android:textSize="15sp" />
+	<TextView
+        android:id="@+id/list_color"
+        android:layout_weight="1"
+        android:gravity="left"
+        android:padding="5dp"
+        android:textColor="#00F"
+        android:textSize="15sp" />
+    <TextView
+        android:id="@+id/list_radius"
+        android:layout_weight="1"
+        android:textColor="#00F"
+        android:gravity="left"
+        android:padding="5dp"
+        android:textSize="15sp" />
+<!--  
+    <TextView
+        android:id="@+id/list_dollar"
+        android:text="@string/dollars"
+        android:layout_weight=".4"
+        android:background="#fff000"
+        android:gravity="right"
+        android:padding="5dp"
+        android:textSize="15sp" />
+    -->
+    <TextView
+        android:id="@+id/list_arc"
+        android:layout_weight="1"
+        android:gravity="left"
+        android:padding="5dp"
+        android:textColor="#00F"
+        android:textSize="15sp" />
+    <TextView
+        android:id="@+id/list_price"
+        android:layout_weight="1"
+        android:textColor="#00F"
+        android:gravity="left"
+        android:padding="5dp"
+        android:textSize="15sp" />
+
+</TableRow>
