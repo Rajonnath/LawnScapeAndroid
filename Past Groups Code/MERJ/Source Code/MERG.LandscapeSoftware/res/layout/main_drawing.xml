@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merg.landscapesoftware.DrawingView 
-   xmlns:android="http://schemas.android.com/apk/res/android"
-   android:id="@+id/drawView"
-   android:layout_width="match_parent"
-   android:layout_height="match_parent"/>
-
-   <!-- View for main canvass for drawing layout
- -->
