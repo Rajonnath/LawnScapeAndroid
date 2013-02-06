@@ -71,14 +71,14 @@ public class ACadScene extends Scene {
 		int groupCount;
 		Entity e, c;
 		for (int i = 0; i < childCount; i++) {
-			e = (Entity)this.getChild(i);
+			e = (Entity)this.getChildByIndex(i);
 			if (e instanceof Grid) {
 				((Grid)e).update();
 			}
 			else if (e instanceof GroupEntity) {
 				groupCount = e.getChildCount();
 				for (int j = 0; j < groupCount; j++) {
-					c = (Entity)e.getChild(j);
+					c = (Entity)e.getChildByIndex(j);
 					if (c instanceof MutablePolygon) {
 						((MutablePolygon)c).setVertexScale(1 / this.getScaleX());
 					}
@@ -111,7 +111,7 @@ public class ACadScene extends Scene {
 		int childCount = this.getChildCount();
 		Entity e;
 		for (int i = 0; i < childCount; i++) {
-			e = (Entity)this.getChild(i);
+			e = (Entity)this.getChildByIndex(i);
 			if (e instanceof Grid) {
 				((Grid)e).update();
 			}
@@ -161,7 +161,7 @@ public class ACadScene extends Scene {
 		// Loop through the children and use their extrema to determine the
 		// bounds of the drawing
 		for (int i = 0; i < count; i++) {
-			child = parent.getChild(i);
+			child = parent.getChildByIndex(i);
 			if (!(child instanceof Grid)) {
 				if (child instanceof MutablePolygon) {
 					childrenExist = true;

@@ -755,7 +755,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			int totalChildren = pScene.getChildCount();
 			IEntity e;
 			for (int i = 0; i < totalChildren; i++) {
-				e = pScene.getChild(i);
+				e = pScene.getChildByIndex(i);
 				if (e instanceof MutablePolygon) {
 					if (((MutablePolygon) e).getState() != PolygonState.VIEW) {
 						// We cannot change the state inside this loop,
@@ -939,7 +939,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		IEntity child;
 		for (int i = 0; i < groups.length; i++) {
 			for (int j = 0; j < groups[i].getChildCount(); j++) {
-				child = groups[i].getChild(j);
+				child = groups[i].getChildByIndex(j);
 				if (child instanceof MutablePolygon) {
 					if (groups[i] == group) {
 						// This layer is touchable
@@ -1359,7 +1359,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		}
 
 		for (int i = 1; i < mainScene.getChildCount(); i++) {
-			IEntity childOfScene = mainScene.getChild(i);
+			IEntity childOfScene = mainScene.getChildByIndex(i);
 			if (childOfScene.getChildCount() != 0) {
 				JSONObject json = new JSONObject(); // object for layer name
 				JSONArray newPolygon = new JSONArray(); // To get a list of
@@ -1372,7 +1372,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					polygonName = new JSONObject(); // appending the type of
 													// polygon
 					// collection of polygon attributes
-					IEntity childOfLayer = childOfScene.getChild(j);
+					IEntity childOfLayer = childOfScene.getChildByIndex(j);
 					if (childOfLayer instanceof MutablePolygon) {
 						try {
 							polygonArray.put(((MutablePolygon) childOfLayer)
@@ -1412,7 +1412,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	public void deleteChildren() {
 		// Exclude the grid layer, it should stay
 		for (int i = 1; i < mainScene.getChildCount(); i++) {
-			IEntity layer = mainScene.getChild(i);
+			IEntity layer = mainScene.getChildByIndex(i);
 			for (int j = 0; j < layer.getChildCount(); j++) {
 				layer.detachChild(layer);
 				layer.detachChildren();

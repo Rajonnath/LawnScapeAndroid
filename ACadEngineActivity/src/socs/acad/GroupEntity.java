@@ -40,11 +40,10 @@ public class GroupEntity extends Entity {
 	/**
 	 * Method called when child is attached
 	 */
-	@Override
-	public boolean attachChild(final IEntity pEntity, final int pIndex) throws IllegalStateException {
-		boolean result = super.attachChild(pEntity, pIndex);
+	public void attachChild(final IEntity pEntity, final int pIndex) throws IllegalStateException {
+	    super.attachChild(pEntity);
 		registerOnParent(pEntity);
-		return result;
+		
 	}
 	
 	/**
@@ -71,7 +70,7 @@ public class GroupEntity extends Entity {
 		int childCount = this.getChildCount();
 		IEntity child;
 		for (int i = 0; i < childCount; i++) {
-			child = this.getChild(i);
+			child = this.getChildByIndex(i);
 			if (child instanceof MutablePolygon) {
 				((MutablePolygon)child).setTouchableState(false);
 			}
@@ -85,7 +84,7 @@ public class GroupEntity extends Entity {
 		int childCount = this.getChildCount();
 		IEntity child;
 		for (int i = 0; i < childCount; i++) {
-			child = this.getChild(i);
+			child = this.getChildByIndex(i);
 			if (child instanceof MutablePolygon) {
 				((MutablePolygon)child).setTouchableState(true);
 			}
