@@ -17,7 +17,13 @@ int drawable ic_menu_sprinkler 0x7f02000f
 int drawable ic_menu_sprinkler_head 0x7f020010
 int drawable ic_menu_tree 0x7f020011
 int drawable ic_picket_fence 0x7f020012
-int drawable menu_button_background 0x7f020013
+int drawable ic_pipe_one 0x7f020013
+int drawable ic_pipe_one_and_one_half 0x7f020014
+int drawable ic_pipe_one_and_one_quarter 0x7f020015
+int drawable ic_pipe_one_half 0x7f020016
+int drawable ic_pipe_three_quarter 0x7f020017
+int drawable ic_pipe_two 0x7f020018
+int drawable menu_button_background 0x7f020019
 int id LinearLayout2 0x7f070002
 int id button1 0x7f070001
 int id editText1 0x7f070003
