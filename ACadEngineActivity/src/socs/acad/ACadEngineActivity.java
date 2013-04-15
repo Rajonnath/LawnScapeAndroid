@@ -91,7 +91,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	final private int MENU_WIDTH = 200;
 	static final float MENU_WIDTH_RATIO = 0.15f;
 	private BaseGameActivity instance = null;
-
+	
 	// Layout related variables
 	public FrameLayout frameLayout;
 	public ScrollView scrollView;
@@ -157,12 +157,13 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	// Colors based upon Android's color palette
 	// http://developer.android.com/design/style/color.html
 	static final int menuDarkGray = 0xFF666666;
-	static final int menuBrown = 0xFFFFBB33;
+	static final int menuYellow = 0xFFFFBB33;
 	static final int menuGreen = 0xFF99CC00;
 	static final int menuBlue = 0xFF3399FF;
 	static final int menuPurple = 0xFF9933FF;
 	static final int menuRed = 0xFFFF4444;
 	static final int menuWhite = 0xFFFFFFFF;
+	static int gridLineColorScheme = 0;
 
 	// State Variables
 	private boolean isZooming = false;
@@ -176,11 +177,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	private SceneType currentScene = SceneType.SPLASH;
 
 	// ENUM for tracking which button was recently pressed
-	private enum ButtonActive {
+	public enum ButtonActive {
 		NONE, HOUSE, FENCE, DRIVEWAY, PATIO, POOL, SIDEWALK, TREE, SHRUB, FLOWERBED, SPRINKLER, ROTORHEAD, PIPEONEHALF,PIPEONE,PIPEONEANDONEHALF,PIPEONEONEANDONEQUARTER,PIPETHREEQUARTER,PIPETWO
 	}
 	private ButtonActive buttonActive = ButtonActive.NONE;
-
+	public static int currentColor = 0;
 	/**
 	 * AndEngine method called when Engine is being instantiated
 	 */
@@ -314,9 +315,16 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	private void loadScenes() {
 		// Load main scene
 		mainScene = new ACadScene(CAMERA_WIDTH, CAMERA_HEIGHT, MENU_WIDTH);
-		mainScene.setBackground(new Background(.15f, .16f, .55f));
+		if (gridLineColorScheme == 0)
+			mainScene.setBackground(new Background(.15f, .16f, .55f));
+		else {
+			mainScene.setBackground(new Background(.1f, .1f, .1f));
+			this.mPinchZoomDetector = new PinchZoomDetector(this);
+		}
+			
+		
 		mainScene.setOnAreaTouchTraversalFrontToBack();
-
+		
 		// The vbo is a high-speed cache to handle vertices storage that OpenGL
 		// uses to draw the triangles that constitute polygons. We are saving
 		// this reference so that it can be used as we add objects to the Scene.
@@ -365,7 +373,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		scrollView = new ScrollView(this);
 		scrollView.setLayoutParams(new ViewGroup.LayoutParams(menuLayout
 				.getWidth() - tabWidth, menuLayout.getHeight()));
-		scrollView.setBackgroundColor(menuBrown);
+		scrollView.setBackgroundColor(menuYellow);
 
 		// Create the Linear Layouts
 		linearLayout = new LinearLayout(this);
@@ -454,7 +462,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			// Choose the color for the tab
 			switch (i) {
 			case 0:
-				tabPaint.setColor(menuBrown);
+				tabPaint.setColor(menuYellow);
 				break;
 			case 1:
 				tabPaint.setColor(menuGreen);
@@ -547,7 +555,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			buttonActive = ButtonActive.NONE;
 
 			// Set scrollView background equal to Android Blue
-			scrollView.setBackgroundColor(menuBrown);
+			scrollView.setBackgroundColor(menuYellow);
 
 			// Create first "house" button
 			button = createMenuButton(menuHouseListener, lp,
@@ -684,6 +692,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			button = createMenuButton(menuReCenterListener, lp,
 					R.drawable.ic_menu_new, "Re-Center");
 			linearLayout.addView(button);
+			
+			// Create sixth "re-center" button
+			button = createMenuButton(menuSettingsListener, lp,
+					R.drawable.ic_menu_settings, "Color Scheme");
+			linearLayout.addView(button);
 
 			break;
 		default:
@@ -810,8 +823,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					// No Action
 					break;
 				case PATIO:
+					currentColor = 1;
 				case HOUSE:
+					currentColor = 1;
 				case POOL:
+					currentColor = 1;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -834,6 +850,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case FENCE:
+					currentColor = 1;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -846,7 +863,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case DRIVEWAY:
+					currentColor = 1;
 				case SIDEWALK:
+					currentColor = 1;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -869,7 +888,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case TREE:
+					currentColor = 2;
 				case SHRUB:
+					currentColor = 2;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -881,6 +902,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case FLOWERBED:
+					currentColor = 2;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -903,7 +925,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case SPRINKLER:
+					currentColor = 3;
 				case ROTORHEAD:
+					currentColor = 3;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -911,6 +935,18 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
 							s.setFont(measurementFont);
 							sprinklerLayer.attachChild(s);
+						}
+					});
+				default: //if not above, then assume a pipe
+					currentColor = 4;
+					this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							// Add the object to the correct layer
+							MutablePolygon s = new MutableLine(localX, localY, vboManager);
+							s.setFont(measurementFont);
+							s.updateVertices(new float[] {-60, 60}, new float[] {0, 0});
+							hardscapeLayer.attachChild(s);
 						}
 					});
 					break;
@@ -1752,6 +1788,19 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					mainScene.activeEntity = null;
 				}
 			});
+		}
+	};
+	
+	/**
+	 * New Button Listener
+	 */
+	View.OnClickListener menuSettingsListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View scrollView) {
+			if (gridLineColorScheme == 0)
+				gridLineColorScheme = 1;
+			else 
+				gridLineColorScheme = 0;
 		}
 	};
 }

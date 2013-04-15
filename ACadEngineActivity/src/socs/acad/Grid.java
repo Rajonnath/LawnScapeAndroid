@@ -18,6 +18,8 @@ import org.andengine.opengl.vbo.IVertexBufferObject;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.Constants;
 
+import android.graphics.Color;
+
 public class Grid extends Shape {
 	// World information variables
 	private float width, height;
@@ -80,7 +82,7 @@ public class Grid extends Shape {
 			minY = -pixelScale;
 			maxX = (width / scale) + pixelScale;
 			maxY = (height / scale) + pixelScale;
-	
+			
 			removeLines();
 			populateLines();
 			
@@ -111,6 +113,7 @@ public class Grid extends Shape {
 		lines.clear();
 	}
 	
+	
 	/**
 	 * Populate the lines for the grid.
 	 */
@@ -120,7 +123,14 @@ public class Grid extends Shape {
 		float startY = Math.round(minY / pixelScale);
 		for (float y = startY; y < maxY; y += pixelScale) {
 			l = new Line(minX, y, maxX, y, vboManager);
-			l.setColor(1f, 1f, 1f, .1f);
+			//set line color? Consider implementing change for dark areas
+			org.andengine.util.color.Color linecolor = null;
+			if(socs.acad.ACadEngineActivity.gridLineColorScheme != 0){
+				l.setColor(linecolor.GREEN);
+			}	
+			else
+				l.setColor(1f,1f,1f,.1f);
+			
 			this.attachChild(l);
 			lines.add(l);
 		}
@@ -128,12 +138,19 @@ public class Grid extends Shape {
 		float startX = Math.round(minX / pixelScale);
 		for (float x = startX; x < maxX; x += pixelScale) {
 			l = new Line(x, minY, x, maxY, vboManager);
-			l.setColor(1f, 1f, 1f, .1f);
+			//set line color? Consider implementing change for dark areas
+			org.andengine.util.color.Color linecolor = null;
+			if(socs.acad.ACadEngineActivity.gridLineColorScheme != 0){
+				l.setColor(linecolor.GREEN);
+			}	
+			else
+				l.setColor(1f,1f,1f,.1f);
+			
 			this.attachChild(l);
 			lines.add(l);
 		}
 	}
-
+	
 	/**
 	 * Must have for class.
 	 */
@@ -164,5 +181,4 @@ public class Grid extends Shape {
 	@Override
 	protected void onUpdateVertices() {
 	}
-
 }
