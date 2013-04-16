@@ -10,6 +10,7 @@
 package socs.acad;
 
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.color.Color;
 
 public class MutableLine extends MutablePolygon {
 

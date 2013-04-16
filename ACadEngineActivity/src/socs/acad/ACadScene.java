@@ -123,8 +123,8 @@ public class ACadScene extends Scene {
 	 */
 	public void resetView() {
 		// Clear extrema variables
-		minX = minY = Float.MAX_VALUE;
-		maxX = maxY = Float.MIN_VALUE;
+		minX = minY = 1;
+		maxX = maxY = 1000;
 		childrenExist = false;
 		// If the scene display has been altered, none of the measurements
 		// will be accurate.  The quick fix is to reset the scale and position

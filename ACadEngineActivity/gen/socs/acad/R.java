@@ -24,13 +24,20 @@ public final class R {
         public static final int ic_menu_pool=0x7f02000a;
         public static final int ic_menu_save=0x7f02000b;
         public static final int ic_menu_save_as=0x7f02000c;
-        public static final int ic_menu_shrubs=0x7f02000d;
-        public static final int ic_menu_sidewalk=0x7f02000e;
-        public static final int ic_menu_sprinkler=0x7f02000f;
-        public static final int ic_menu_sprinkler_head=0x7f020010;
-        public static final int ic_menu_tree=0x7f020011;
-        public static final int ic_picket_fence=0x7f020012;
-        public static final int menu_button_background=0x7f020013;
+        public static final int ic_menu_settings=0x7f02000d;
+        public static final int ic_menu_shrubs=0x7f02000e;
+        public static final int ic_menu_sidewalk=0x7f02000f;
+        public static final int ic_menu_sprinkler=0x7f020010;
+        public static final int ic_menu_sprinkler_head=0x7f020011;
+        public static final int ic_menu_tree=0x7f020012;
+        public static final int ic_picket_fence=0x7f020013;
+        public static final int ic_pipe_one=0x7f020014;
+        public static final int ic_pipe_one_and_one_half=0x7f020015;
+        public static final int ic_pipe_one_and_one_quarter=0x7f020016;
+        public static final int ic_pipe_one_half=0x7f020017;
+        public static final int ic_pipe_three_quarter=0x7f020018;
+        public static final int ic_pipe_two=0x7f020019;
+        public static final int menu_button_background=0x7f02001a;
     }
     public static final class id {
         public static final int LinearLayout2=0x7f070002;
