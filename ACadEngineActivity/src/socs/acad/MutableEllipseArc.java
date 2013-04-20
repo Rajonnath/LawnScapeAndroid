@@ -11,6 +11,7 @@ package socs.acad;
 import java.util.Arrays;
 
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.color.Color;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,7 +66,7 @@ public class MutableEllipseArc extends MutablePolygon {
 		vertexTouchable[verticesInArc] = true;
 		measurementVisible[verticesInArc] = true;
 		measurementVisible[0] = true;
-		
+		setColor(Color.WHITE);
 		// Add the display shape
 		regenerateShape();
 		regenerateOutline();

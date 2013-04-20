@@ -1039,6 +1039,8 @@ public class MutablePolygon extends Shape {
 	 */
 	public void setVertex(int newVertex) {
 		// Clear the old vertex
+		ACadEngineActivity.resetCurrentColor();
+
 		for (int i = 0; i < vertex.length; i++) {
 			if (i != newVertex && vertex[i] != null) {
 				vertex[i].setColor(1f, 1f, 1f, 1f);

@@ -178,9 +178,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 
 	// ENUM for tracking which button was recently pressed
 	public enum ButtonActive {
-		NONE, HOUSE, FENCE, DRIVEWAY, PATIO, POOL, SIDEWALK, TREE, SHRUB, FLOWERBED, SPRINKLER, ROTORHEAD, PIPEONEHALF,PIPEONE,PIPEONEANDONEHALF,PIPEONEONEANDONEQUARTER,PIPETHREEQUARTER,PIPETWO
+		NONE, HOUSE, FENCE, DRIVEWAY, PATIO, POOL, SIDEWALK, TREE, SHRUB, FLOWERBED, SPRINKLER, 
+		ROTORHEAD, PIPEONEHALF,PIPEONE,PIPEONEANDONEHALF,PIPEONEONEANDONEQUARTER,PIPETHREEQUARTER,PIPETWO,
+		SPRINKLERREMOVE
 	}
-	private ButtonActive buttonActive = ButtonActive.NONE;
+	private static ButtonActive buttonActive = ButtonActive.NONE;
 	public static int currentColor = 0;
 	/**
 	 * AndEngine method called when Engine is being instantiated
@@ -315,14 +317,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	private void loadScenes() {
 		// Load main scene
 		mainScene = new ACadScene(CAMERA_WIDTH, CAMERA_HEIGHT, MENU_WIDTH);
-		if (gridLineColorScheme == 0)
-			mainScene.setBackground(new Background(.15f, .16f, .55f));
-		else {
-			mainScene.setBackground(new Background(.1f, .1f, .1f));
-			this.mPinchZoomDetector = new PinchZoomDetector(this);
-		}
+		mainScene.setBackground(new Background(.15f, .16f, .55f));
+		this.mPinchZoomDetector = new PinchZoomDetector(this);
 			
-		
 		mainScene.setOnAreaTouchTraversalFrontToBack();
 		
 		// The vbo is a high-speed cache to handle vertices storage that OpenGL
@@ -624,7 +621,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			button = createMenuButton(menuRotorheadListener, lp,
 					R.drawable.ic_menu_sprinkler_head, "Rotorhead");
 			linearLayout.addView(button);
-
 			break;
 		case 3:
 			// Pipe tab
@@ -693,11 +689,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					R.drawable.ic_menu_new, "Re-Center");
 			linearLayout.addView(button);
 			
-			// Create sixth "re-center" button
+			// Create recenter button
 			button = createMenuButton(menuSettingsListener, lp,
 					R.drawable.ic_menu_settings, "Color Scheme");
 			linearLayout.addView(button);
-
 			break;
 		default:
 
@@ -824,9 +819,49 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					break;
 				case PATIO:
 					currentColor = 0;
+					this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							dialogGetDimensions(new Runnable() {
+								@Override
+								public void run() {
+									// This code is run after the OK button is clicked
+									float halfWidth = dialogWidth / 2;
+									float halfHeight = dialogHeight / 2;
+									// Add the object to the correct layer
+									MutablePolygon s = new MutablePolygon(localX, localY, vboManager);
+									s.setFont(measurementFont);
+									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
+											-halfWidth }, new float[] { -halfHeight, -halfHeight,
+											halfHeight, halfHeight });
+									hardscapeLayer.attachChild(s);
+								}
+							});
+						}
+					});
 					break;
 				case HOUSE:
 					currentColor = 0;
+					this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							dialogGetDimensions(new Runnable() {
+								@Override
+								public void run() {
+									// This code is run after the OK button is clicked
+									float halfWidth = dialogWidth / 2;
+									float halfHeight = dialogHeight / 2;
+									// Add the object to the correct layer
+									MutablePolygon s = new MutablePolygon(localX, localY, vboManager);
+									s.setFont(measurementFont);
+									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
+											-halfWidth }, new float[] { -halfHeight, -halfHeight,
+											halfHeight, halfHeight });
+									hardscapeLayer.attachChild(s);
+								}
+							});
+						}
+					});
 					break;
 				case POOL:
 					currentColor = 0;
@@ -866,6 +901,26 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					break;
 				case DRIVEWAY:
 					currentColor = 0;
+					this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							dialogGetDimensions(new Runnable() {
+								@Override
+								public void run() {
+									// This code is run after the OK button is clicked
+									float halfWidth = dialogWidth / 2;
+									float halfHeight = dialogHeight / 2;
+									// Add the object to the correct layer
+									MutablePolygon s = new MutablePolygon(localX, localY, vboManager);
+									s.setFont(measurementFont);
+									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
+											-halfWidth }, new float[] { -halfHeight, -halfHeight,
+											halfHeight, halfHeight });
+									hardscapeLayer.attachChild(s);
+								}
+							});
+						}
+					});
 					break;
 				case SIDEWALK:
 					currentColor = 0;
@@ -901,6 +956,24 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							// Add the object to the correct layer
 							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
 							s.setFont(measurementFont);
+							switch(ACadEngineActivity.currentColor)
+							{
+								case 0:
+									s.setColor(1f, .76f, .28f,.5f);
+									break;
+								case 1:
+									s.setColor(.64f, .82f, .1f,.5f);
+									break;
+								case 2:
+									s.setColor(.28f, .64f, 1f,.5f);
+									break;
+								case 3:
+									s.setColor(.64f, .28f, 1f,.5f);
+									break;
+								default:
+									s.setColor(Color.WHITE);
+									break;
+							}
 							landscapeLayer.attachChild(s);
 						}
 					});
@@ -948,6 +1021,24 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							// Add the object to the correct layer
 							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
 							s.setFont(measurementFont);
+							switch(ACadEngineActivity.currentColor)
+							{
+								case 0:
+									s.setColor(1f, .76f, .28f,.3f);
+									break;
+								case 1:
+									s.setColor(.64f, .82f, .1f,.3f);
+									break;
+								case 2:
+									s.setColor(.28f, .64f, 1f,.3f);
+									break;
+								case 3:
+									s.setColor(.64f, .28f, 1f,.3f);
+									break;
+								default:
+									s.setColor(Color.WHITE);
+									break;
+							}
 							sprinklerLayer.attachChild(s);
 						}
 					});
@@ -1019,6 +1110,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					if (groups[i] == group) {
 						// This layer is touchable
 						((MutablePolygon)child).setTouchableState(true);
+						if(groups[i] == hardscapeLayer)
+							currentColor = i+1;
 					}
 					else {
 						// This layer is not touchable
@@ -1577,7 +1670,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			buttonActive = ButtonActive.HOUSE;
 		}
 	};
-
+	
 	/**
 	 * Fence Button Listener
 	 */
@@ -1818,4 +1911,21 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				gridLineColorScheme = 0;
 		}
 	};
+	public static void resetCurrentColor() {
+		if(buttonActive == ButtonActive.NONE
+				|| buttonActive == ButtonActive.DRIVEWAY
+				|| buttonActive == ButtonActive.PATIO
+				|| buttonActive == ButtonActive.POOL
+				|| buttonActive == ButtonActive.SIDEWALK)
+			currentColor = 0;
+		else if(buttonActive == ButtonActive.TREE
+				|| buttonActive == ButtonActive.SHRUB
+				|| buttonActive == ButtonActive.FLOWERBED)
+			currentColor = 1;
+		else if(buttonActive == ButtonActive.SPRINKLER
+				|| buttonActive == ButtonActive.ROTORHEAD)
+			currentColor = 2;
+		else
+			currentColor = 3;
+	}
 }
