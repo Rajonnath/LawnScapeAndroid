@@ -823,11 +823,13 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					// No Action
 					break;
 				case PATIO:
-					currentColor = 1;
+					currentColor = 0;
+					break;
 				case HOUSE:
-					currentColor = 1;
+					currentColor = 0;
+					break;
 				case POOL:
-					currentColor = 1;
+					currentColor = 0;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -850,7 +852,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case FENCE:
-					currentColor = 1;
+					currentColor = 0;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -863,9 +865,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case DRIVEWAY:
-					currentColor = 1;
+					currentColor = 0;
+					break;
 				case SIDEWALK:
-					currentColor = 1;
+					currentColor = 0;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -888,9 +891,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case TREE:
-					currentColor = 2;
+					currentColor = 1;
+					break;
 				case SHRUB:
-					currentColor = 2;
+					currentColor = 1;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -902,7 +906,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case FLOWERBED:
-					currentColor = 2;
+					currentColor = 1;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -925,9 +929,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					});
 					break;
 				case SPRINKLER:
-					currentColor = 3;
-				case ROTORHEAD:
-					currentColor = 3;
+					currentColor = 2;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -937,8 +939,21 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							sprinklerLayer.attachChild(s);
 						}
 					});
+					break;
+				case ROTORHEAD:
+					currentColor = 2;
+					this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							// Add the object to the correct layer
+							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
+							s.setFont(measurementFont);
+							sprinklerLayer.attachChild(s);
+						}
+					});
+					break;
 				default: //if not above, then assume a pipe
-					currentColor = 4;
+					currentColor = 3;
 					this.runOnUiThread(new Runnable() {
 						@Override
 						public void run() {

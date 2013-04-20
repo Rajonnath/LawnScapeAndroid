@@ -27,6 +27,7 @@ import org.andengine.opengl.vbo.IVertexBufferObject;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.Constants;
 import org.andengine.util.HorizontalAlign;
+import org.andengine.util.color.Color;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -213,7 +214,26 @@ public class MutablePolygon extends Shape {
 		this.detachChild(outline);
 		outline = new PolyLine(0, 0, outlineVertexX, outlineVertexY, vboManager);
 		outline.setLineWidth(3);
-		outline.setColor(1f, 1f, 1f);
+		
+		switch(ACadEngineActivity.currentColor)
+		{
+			case 0:
+				outline.setColor(1f, .76f, .28f);
+				break;
+			case 1:
+				outline.setColor(.64f, .82f, .1f);
+				break;
+			case 2:
+				outline.setColor(.28f, .64f, 1f);
+				break;
+			case 3:
+				outline.setColor(.64f, .28f, 1f);
+				break;
+			default:
+				outline.setColor(Color.WHITE);
+				break;
+		}
+		
 		outline.setAlpha(0);
 		outline.setAlpha(1f);
 		this.attachChild(outline);
