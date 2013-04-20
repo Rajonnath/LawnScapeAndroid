@@ -947,6 +947,33 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					break;
 				case TREE:
 					currentColor = 1;
+					this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							// Add the object to the correct layer
+							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
+							s.setFont(measurementFont);
+							switch(ACadEngineActivity.currentColor)
+							{
+								case 0:
+									s.setColor(1f, .76f, .28f,.5f);
+									break;
+								case 1:
+									s.setColor(.64f, .82f, .1f,.5f);
+									break;
+								case 2:
+									s.setColor(.28f, .64f, 1f,.5f);
+									break;
+								case 3:
+									s.setColor(.64f, .28f, 1f,.5f);
+									break;
+								default:
+									s.setColor(Color.WHITE);
+									break;
+							}
+							landscapeLayer.attachChild(s);
+						}
+					});
 					break;
 				case SHRUB:
 					currentColor = 1;
