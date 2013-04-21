@@ -126,7 +126,7 @@ public class Grid extends Shape {
 			//set line color? Consider implementing change for dark areas
 			org.andengine.util.color.Color linecolor = null;
 			if(socs.acad.ACadEngineActivity.gridLineColorScheme != 0){
-				l.setColor(linecolor.GREEN);
+				l.setColor(.28f, 0f, 0f);
 			}	
 			else
 				l.setColor(1f,1f,1f,.1f);
@@ -141,7 +141,7 @@ public class Grid extends Shape {
 			//set line color? Consider implementing change for dark areas
 			org.andengine.util.color.Color linecolor = null;
 			if(socs.acad.ACadEngineActivity.gridLineColorScheme != 0){
-				l.setColor(linecolor.GREEN);
+				l.setColor(.28f, 0f, 0f);
 			}	
 			else
 				l.setColor(1f,1f,1f,.1f);

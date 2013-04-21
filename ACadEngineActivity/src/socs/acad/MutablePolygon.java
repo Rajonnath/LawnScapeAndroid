@@ -890,7 +890,10 @@ public class MutablePolygon extends Shape {
 					t = new Text(newX, newY, font, this.formatDistance(measurement[i]), 128, new TextOptions(HorizontalAlign.CENTER), vboManager);
 					t.setPosition(t.getX() - t.getWidth() / 2f, t.getY() - t.getHeight() / 2f);
 					t.setAlpha(0);
-					t.setColor(1f, 1f, 0f);
+					if(ACadEngineActivity.gridLineColorScheme == 0)
+						t.setColor(1f, 1f, 0f);
+					else
+						t.setColor(.88f, .22f, .22f);
 					t.setAlpha(1f);
 					t.setRotation((float)Math.toDegrees(segmentAngle));
 					this.attachChild(t);

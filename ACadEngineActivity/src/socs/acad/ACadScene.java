@@ -12,6 +12,8 @@ package socs.acad;
 import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.scene.background.Background;
+import org.andengine.util.color.Color;
 
 public class ACadScene extends Scene {
 	// Variables for tracking aspects of the surrounding world
@@ -122,9 +124,10 @@ public class ACadScene extends Scene {
 	 * Re-scale and re-center so that all items are visible
 	 */
 	public void resetView() {
+		clearTouchAreas();
 		// Clear extrema variables
-		minX = minY = 1;
-		maxX = maxY = 1000;
+		minX = minY = Float.MAX_VALUE;
+		maxX = maxY = Float.MIN_VALUE;
 		childrenExist = false;
 		// If the scene display has been altered, none of the measurements
 		// will be accurate.  The quick fix is to reset the scale and position

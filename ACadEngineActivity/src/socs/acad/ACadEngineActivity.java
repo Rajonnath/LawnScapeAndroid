@@ -689,7 +689,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					R.drawable.ic_menu_new, "Re-Center");
 			linearLayout.addView(button);
 			
-			// Create recenter button
+			// Create color scheme button
 			button = createMenuButton(menuSettingsListener, lp,
 					R.drawable.ic_menu_settings, "Color Scheme");
 			linearLayout.addView(button);
@@ -1932,10 +1932,46 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	View.OnClickListener menuSettingsListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View scrollView) {
-			if (gridLineColorScheme == 0)
+			if (gridLineColorScheme == 0){
 				gridLineColorScheme = 1;
-			else 
+				mainScene.setBackground(new Background(.82f, .82f, .82f));
+				for (int i = 1; i < mainScene.getChildCount(); i++) {
+					IEntity childOfScene = mainScene.getChildByIndex(i);
+					if (childOfScene.getChildCount() != 0) {
+
+						for (int j = 0; j < childOfScene.getChildCount(); j++) {
+							// collection of polygon attributes
+							IEntity childOfLayer = childOfScene.getChildByIndex(j);
+							if (childOfLayer instanceof MutablePolygon) {
+								((MutablePolygon) childOfLayer).populateMeasurements();
+										}
+						}
+					}
+				}
+			}
+			else {
 				gridLineColorScheme = 0;
+				mainScene.setBackground(new Background(.15f, .16f, .55f));
+				for (int i = 1; i < mainScene.getChildCount(); i++) {
+					IEntity childOfScene = mainScene.getChildByIndex(i);
+					if (childOfScene.getChildCount() != 0) {
+						for (int j = 0; j < childOfScene.getChildCount(); j++) {
+							// collection of polygon attributes
+							IEntity childOfLayer = childOfScene.getChildByIndex(j);
+							if (childOfLayer instanceof MutablePolygon) {
+								((MutablePolygon) childOfLayer).populateMeasurements();
+										}
+						}
+					}
+				}
+			}
+			instance.runOnUpdateThread(new Runnable() {
+				@Override
+				public void run() {
+					mainScene.resetView();
+					
+				}
+			});
 		}
 	};
 	public static void resetCurrentColor() {
