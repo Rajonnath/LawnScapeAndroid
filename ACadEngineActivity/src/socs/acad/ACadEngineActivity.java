@@ -1048,24 +1048,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							// Add the object to the correct layer
 							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
 							s.setFont(measurementFont);
-							switch(ACadEngineActivity.currentColor)
-							{
-								case 0:
-									s.setColor(1f, .76f, .28f,.3f);
-									break;
-								case 1:
-									s.setColor(.64f, .82f, .1f,.3f);
-									break;
-								case 2:
-									s.setColor(.28f, .64f, 1f,.3f);
-									break;
-								case 3:
-									s.setColor(.64f, .28f, 1f,.3f);
-									break;
-								default:
-									s.setColor(Color.WHITE);
-									break;
-							}
 							sprinklerLayer.attachChild(s);
 						}
 					});
@@ -1947,7 +1929,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 										}
 						}
 					}
-				}
+				} 
 			}
 			else {
 				gridLineColorScheme = 0;
@@ -1969,7 +1951,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				@Override
 				public void run() {
 					mainScene.resetView();
-					
 				}
 			});
 		}
