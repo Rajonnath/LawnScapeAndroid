@@ -32,6 +32,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import socs.acad.ACadEngineActivity.ButtonActive;
+
 import android.util.FloatMath;
 
 public class MutablePolygon extends Shape {
@@ -81,7 +83,15 @@ public class MutablePolygon extends Shape {
 	protected double jsonTouchY ;
 	protected double jsonPolygonAngle;
 	protected double jsonPolygonRadius;
-
+	
+	public String PolygonObjectType[] = {
+		"HOUSE", "FENCE", "DRIVEWAY", "PATIO", "POOL", "SIDEWALK",
+		"TREE", "SHRUB", "FLOWERBED",
+		"SPRINKLER","ROTORHEAD",
+		"PIPE12", "PIPE34", "PIPE1", "PIPE112", "PIPE2"
+	};
+	
+	public String ObjectType;
 	/**
 	 * Constructor.
 	 */
@@ -108,6 +118,8 @@ public class MutablePolygon extends Shape {
 		}
 
 		// Setup the vertex and measurement defaults
+		// ObjectType = PolygonObjectType[ACadEngineActivity.activeButton];
+		
 		vertexTouchable = new boolean[mVertexX.length];
 		measurementVisible = new boolean[mVertexX.length];
 		measurement = new float[mVertexX.length];
@@ -230,7 +242,6 @@ public class MutablePolygon extends Shape {
 				outline.setColor(.64f, .28f, 1f);
 				break;
 			default:
-				outline.setColor(Color.WHITE);
 				break;
 		}
 		
@@ -1043,7 +1054,6 @@ public class MutablePolygon extends Shape {
 	 */
 	public void setVertex(int newVertex) {
 		// Clear the old vertex
-		ACadEngineActivity.resetCurrentColor();
 
 		for (int i = 0; i < vertex.length; i++) {
 			if (i != newVertex && vertex[i] != null) {

@@ -163,6 +163,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	static final int menuPurple = 0xFF9933FF;
 	static final int menuRed = 0xFFFF4444;
 	static final int menuWhite = 0xFFFFFFFF;
+	protected static final PolygonState VIEW = null;
+	protected static final PolygonState EDIT = null;
 	static int gridLineColorScheme = 0;
 
 	// State Variables
@@ -177,12 +179,13 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	private SceneType currentScene = SceneType.SPLASH;
 
 	// ENUM for tracking which button was recently pressed
-	public enum ButtonActive {
+	public static enum ButtonActive {
 		NONE, HOUSE, FENCE, DRIVEWAY, PATIO, POOL, SIDEWALK, TREE, SHRUB, FLOWERBED, SPRINKLER, 
 		ROTORHEAD, PIPEONEHALF,PIPEONE,PIPEONEANDONEHALF,PIPEONEONEANDONEQUARTER,PIPETHREEQUARTER,PIPETWO,
 		SPRINKLERREMOVE
 	}
 	private static ButtonActive buttonActive = ButtonActive.NONE;
+	public static int activeButton = 999;
 	public static int currentColor = 0;
 	/**
 	 * AndEngine method called when Engine is being instantiated
@@ -583,6 +586,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			button = createMenuButton(menuSidewalkListener, lp,
 					R.drawable.ic_menu_sidewalk, "Sidewalk");
 			linearLayout.addView(button);
+			
+//			// Create sixth "delete" button
+//						button = createMenuButton(hardscapeRemove, lp,
+//								R.drawable.ic_menu_settings, "Delete");
+//						linearLayout.addView(button);
 			break;
 		case 1:
 			// Landscape tab
@@ -1068,6 +1076,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				}
 				// Clear the active button indicator
 				buttonActive = ButtonActive.NONE;
+				activeButton = 999;
 			}
 			return true;
 		}
@@ -1119,8 +1128,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					if (groups[i] == group) {
 						// This layer is touchable
 						((MutablePolygon)child).setTouchableState(true);
-						if(groups[i] == hardscapeLayer)
-							currentColor = i+1;
+//						buttonActive = ButtonActive.NONE;
+//						activeButton = 999;
 					}
 					else {
 						// This layer is not touchable
@@ -1677,6 +1686,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View linearLayout) {
 			buttonActive = ButtonActive.HOUSE;
+			activeButton = 0;
 		}
 	};
 	
@@ -1687,6 +1697,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View linearLayout) {
 			buttonActive = ButtonActive.FENCE;
+			activeButton = 1;
 		}
 	};
 
@@ -1697,6 +1708,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.DRIVEWAY;
+			activeButton = 3;
 		}
 	};
 
@@ -1707,6 +1719,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PATIO;
+			activeButton = 4;
 		}
 	};
 
@@ -1717,6 +1730,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.POOL;
+			activeButton = 5;
 		}
 	};
 
@@ -1727,6 +1741,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.SIDEWALK;
+			activeButton = 6;
 		}
 	};
 
@@ -1737,6 +1752,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.TREE;
+			activeButton = 7;
 		}
 	};
 
@@ -1747,6 +1763,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.SHRUB;
+			activeButton = 8;
 		}
 	};
 
@@ -1757,6 +1774,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.FLOWERBED;
+			activeButton = 9;
 		}
 	};
 
@@ -1767,6 +1785,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.SPRINKLER;
+			activeButton = 10;
 		}
 	};
 
@@ -1777,6 +1796,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.ROTORHEAD;
+			activeButton = 11;
 		}
 	};
 	
@@ -1787,6 +1807,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPEONEHALF;
+			activeButton = 12;
 		}
 	};
 	
@@ -1797,6 +1818,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPETHREEQUARTER;
+			activeButton = 13;
 		}
 	};
 	
@@ -1807,6 +1829,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPEONE;
+			activeButton = 14;
 		}
 	};
 	
@@ -1817,6 +1840,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPEONEANDONEHALF;
+			activeButton = 15;
 		}
 	};
 	/**
@@ -1826,6 +1850,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPETWO;
+			activeButton = 16;
 		}
 	};
 	
@@ -1908,6 +1933,33 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		}
 	};
 	
+//	/**
+//	 * hardscape remove
+//	 */
+//	View.OnClickListener hardscapeRemove = new View.OnClickListener() {
+//		@Override
+//		public void onClick(View scrollView) {
+//			for (int i = 1; i < mainScene.getChildCount(); i++) {
+//				IEntity childOfScene = mainScene.getChildByIndex(i);
+//				if (childOfScene.getChildCount() != 0) {
+//					for (int j = 0; j < childOfScene.getChildCount(); j++) {
+//						// collection of polygon attributes
+//						IEntity childOfLayer = childOfScene.getChildByIndex(j);
+//						if (childOfLayer instanceof MutablePolygon) {
+//							((MutablePolygon) childOfLayer).populateMeasurements();
+//							((MutablePolygon) childOfLayer).setColor(0f,0f,0f,0f);
+//									}
+//					}
+//				}
+//			}
+//			instance.runOnUpdateThread(new Runnable() {
+//				@Override
+//				public void run() {
+//					mainScene.resetView();
+//				}
+//			});
+//		}		
+//	};
 	/**
 	 * New Button Listener
 	 */
@@ -1920,7 +1972,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				for (int i = 1; i < mainScene.getChildCount(); i++) {
 					IEntity childOfScene = mainScene.getChildByIndex(i);
 					if (childOfScene.getChildCount() != 0) {
-
 						for (int j = 0; j < childOfScene.getChildCount(); j++) {
 							// collection of polygon attributes
 							IEntity childOfLayer = childOfScene.getChildByIndex(j);
@@ -1956,8 +2007,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		}
 	};
 	public static void resetCurrentColor() {
-		if(buttonActive == ButtonActive.NONE
-				|| buttonActive == ButtonActive.DRIVEWAY
+		if(buttonActive == ButtonActive.DRIVEWAY
 				|| buttonActive == ButtonActive.PATIO
 				|| buttonActive == ButtonActive.POOL
 				|| buttonActive == ButtonActive.SIDEWALK)
@@ -1969,7 +2019,12 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		else if(buttonActive == ButtonActive.SPRINKLER
 				|| buttonActive == ButtonActive.ROTORHEAD)
 			currentColor = 2;
-		else
+		else if(buttonActive == ButtonActive.PIPEONEHALF
+				|| buttonActive == ButtonActive.PIPEONE
+				|| buttonActive == ButtonActive.PIPEONEANDONEHALF
+				|| buttonActive == ButtonActive.PIPEONEONEANDONEQUARTER
+				|| buttonActive == ButtonActive.PIPETHREEQUARTER
+				|| buttonActive == ButtonActive.PIPETWO)
 			currentColor = 3;
 	}
 }
