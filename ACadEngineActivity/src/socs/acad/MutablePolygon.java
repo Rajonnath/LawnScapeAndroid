@@ -84,14 +84,6 @@ public class MutablePolygon extends Shape {
 	protected double jsonPolygonAngle;
 	protected double jsonPolygonRadius;
 	
-	public String PolygonObjectType[] = {
-		"HOUSE", "FENCE", "DRIVEWAY", "PATIO", "POOL", "SIDEWALK",
-		"TREE", "SHRUB", "FLOWERBED",
-		"SPRINKLER","ROTORHEAD",
-		"PIPE12", "PIPE34", "PIPE1", "PIPE112", "PIPE2"
-	};
-	
-	public String ObjectType;
 	/**
 	 * Constructor.
 	 */
@@ -117,9 +109,6 @@ public class MutablePolygon extends Shape {
 			mVertexY = new float[]{-60f, -60f, 60f, 60f};
 		}
 
-		// Setup the vertex and measurement defaults
-		// ObjectType = PolygonObjectType[ACadEngineActivity.activeButton];
-		
 		vertexTouchable = new boolean[mVertexX.length];
 		measurementVisible = new boolean[mVertexX.length];
 		measurement = new float[mVertexX.length];

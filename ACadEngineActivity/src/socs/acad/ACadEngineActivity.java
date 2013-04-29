@@ -10,10 +10,16 @@
 
 package socs.acad;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Vector;
 
@@ -93,7 +99,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	final private int MENU_WIDTH = 200;
 	static final float MENU_WIDTH_RATIO = 0.15f;
 	private BaseGameActivity instance = null;
-	
+
 	// Layout related variables
 	public FrameLayout frameLayout;
 	public ScrollView scrollView;
@@ -112,13 +118,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	private float lastX, lastY;
 
 	// Display Layers used within the scene
-	private GroupEntity worldLayer, hardscapeLayer, landscapeLayer,
-			sprinklerLayer, pipeLayer;
+	private GroupEntity worldLayer, hardscapeLayer, landscapeLayer, sprinklerLayer, pipeLayer;
 	private Grid gridLayer;
 
 	// Tabbed Menu
-	private String[] menuItems = new String[] { "Hardscape", "Landscape",
-			"Sprinkler", "Pipe", "Menu" };
+	private String[] menuItems = new String[] { "Hardscape", "Landscape", "Sprinkler", "Pipe", "Menu" };
 	private ImageView[] tabImage;
 	private int tabWidth, tabHeight;
 
@@ -138,13 +142,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 
 	// File saving / JSON related
 	private String getfileName = null;
-	double jsontouchY, jsontouchX, jsonpolyAngle;
-	double[] jsonXvertex;
-	double[] jsonYvertex;
-	private String[] jsonpolygonTypeArray = new String[] {
-			"class socs.acad.MutablePolygon",
-			"class socs.acad.MutableRectangle", "class socs.acad.MutableLine",
-			"class socs.acad.MutableEllipseArc" };
+	float jsontouchY, jsontouchX, jsonpolyAngle;
+	float[] jsonXvertex = new float[4];
+	float[] jsonYvertex = new float[4];
 	private double jsonEllipseRadius;
 	private double jsonEllipseAngle;
 	private Shape jsons;
@@ -178,6 +178,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	private enum SceneType {
 		SPLASH, MAIN
 	}
+
 	private SceneType currentScene = SceneType.SPLASH;
 
 	// ENUM for tracking which button was recently pressed
@@ -186,9 +187,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		ROTORHEAD, PIPEONEHALF,PIPEONE,PIPEONEANDONEHALF,PIPEONEONEANDONEQUARTER,PIPETHREEQUARTER,PIPETWO,
 		SPRINKLERREMOVE
 	}
+
 	private static ButtonActive buttonActive = ButtonActive.NONE;
-	public static int activeButton = 999;
 	public static int currentColor = 0;
+
 	/**
 	 * AndEngine method called when Engine is being instantiated
 	 */
@@ -250,18 +252,18 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				new ITimerCallback() {
 					public void onTimePassed(final TimerHandler pTimerHandler) {
 						mEngine.unregisterUpdateHandler(pTimerHandler);
-						
+
 						// Load Things that take time
 						loadResources();
 						loadScenes();
-						
+
 						// Show the splash screen a little longer
 						try {
 							Thread.sleep(300);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						
+
 						// Hide the splash screen and show the main Scene
 						splash.detachSelf();
 						mEngine.setScene(mainScene);
@@ -323,10 +325,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		// Load main scene
 		mainScene = new ACadScene(CAMERA_WIDTH, CAMERA_HEIGHT, MENU_WIDTH);
 		mainScene.setBackground(new Background(.15f, .16f, .55f));
-		this.mPinchZoomDetector = new PinchZoomDetector(this);
-			
+
 		mainScene.setOnAreaTouchTraversalFrontToBack();
-		
+
 		// The vbo is a high-speed cache to handle vertices storage that OpenGL
 		// uses to draw the triangles that constitute polygons. We are saving
 		// this reference so that it can be used as we add objects to the Scene.
@@ -345,7 +346,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 
 		// The mapScale variable must be created before gridLayer is attached
 		mapScale = new MapScale(230, CAMERA_HEIGHT - 70, 24 / 2, 24, vboManager);
-		
+
 		// Attach the layers to the Scene
 		mainScene.attachChild(gridLayer);
 		mainScene.attachChild(worldLayer);
@@ -383,7 +384,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		tabHolder = new LinearLayout(this);
 		tabHolder.setOrientation(LinearLayout.VERTICAL);
 		final RelativeLayout.LayoutParams tabLayoutParams = new RelativeLayout.LayoutParams(
-				tabWidth, RelativeLayout.LayoutParams.FILL_PARENT);
+				tabWidth, RelativeLayout.LayoutParams.MATCH_PARENT);
 		tabLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
 		// Generate imageViews for each menu tab
@@ -622,12 +623,12 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			buttonActive = ButtonActive.NONE;
 			scrollView.setBackgroundColor(menuBlue);
 
-			// Create third "flowerbed" button
+			// Create Sprinkler button
 			button = createMenuButton(menuSprinklerListener, lp,
 					R.drawable.ic_menu_sprinkler, "Sprinkler");
 			linearLayout.addView(button);
 
-			// Create third "flowerbed" button
+			// Create Rotorhead button
 			button = createMenuButton(menuRotorheadListener, lp,
 					R.drawable.ic_menu_sprinkler_head, "Rotorhead");
 			linearLayout.addView(button);
@@ -642,23 +643,23 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			button = createMenuButton(menuPipeOneHalfListener, lp,
 					R.drawable.ic_pipe_one_half, "Pipe");
 			linearLayout.addView(button);
-			
-			// Create first pipe button button
+
+			// Create 2nd pipe button button
 			button = createMenuButton(menuPipeThreeQuarterListener, lp,
 					R.drawable.ic_pipe_three_quarter, "Pipe");
 			linearLayout.addView(button);
-			
-			// Create first pipe button button
+
+			// Create 3rd pipe button button
 			button = createMenuButton(menuPipeOneListener, lp,
 					R.drawable.ic_pipe_one, "Pipe");
 			linearLayout.addView(button);
-			
-			// Create first pipe button button
+
+			// Create 4th pipe button button
 			button = createMenuButton(menuPipeOneAndOneHalfListener, lp,
 					R.drawable.ic_pipe_one_and_one_half, "Pipe");
 			linearLayout.addView(button);
-			
-			// Create first pipe button button
+
+			// Create 5th pipe button button
 			button = createMenuButton(menuPipeTwoListener, lp,
 					R.drawable.ic_pipe_two, "Pipe");
 			linearLayout.addView(button);
@@ -684,9 +685,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					R.drawable.ic_menu_save, "Save");
 			linearLayout.addView(button);
 
-			// Create fourth "Save As" button
-			button = createMenuButton(menuSaveAsListener, lp,
-					R.drawable.ic_menu_save_as, "Save As");
+			// Create export to png button
+			button = createMenuButton(menuExportToPng, lp,
+					R.drawable.ic_menu_settings, "Export");
 			linearLayout.addView(button);
 
 			// Create fifth "Exit" button
@@ -698,15 +699,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			button = createMenuButton(menuReCenterListener, lp,
 					R.drawable.ic_menu_new, "Re-Center");
 			linearLayout.addView(button);
-			
+
 			// Create color scheme button
 			button = createMenuButton(menuSettingsListener, lp,
 					R.drawable.ic_menu_settings, "Color Scheme");
-			linearLayout.addView(button);
-			
-			// Create export to png button
-			button = createMenuButton(menuExportToPng, lp,
-					R.drawable.ic_menu_settings, "Export");
 			linearLayout.addView(button);
 			break;
 		default:
@@ -724,15 +720,15 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		// Use a Frame Layout so that the tab menu can be overlayed on grid
 		frameLayout = new FrameLayout(this);
 		final FrameLayout.LayoutParams frameLayoutLayoutParams = new FrameLayout.LayoutParams(
-				FrameLayout.LayoutParams.FILL_PARENT,
-				FrameLayout.LayoutParams.FILL_PARENT);
+				FrameLayout.LayoutParams.MATCH_PARENT,
+				FrameLayout.LayoutParams.MATCH_PARENT);
 		final int menuWidth = (int) (instance.getResources()
 				.getDisplayMetrics().widthPixels * MENU_WIDTH_RATIO);
 
 		// Create the menu layout
 		menuLayout = new RelativeLayout(this);
 		final RelativeLayout.LayoutParams menuLayoutParams = new RelativeLayout.LayoutParams(
-				menuWidth, RelativeLayout.LayoutParams.FILL_PARENT);
+				menuWidth, RelativeLayout.LayoutParams.MATCH_PARENT);
 
 		// Create the Render Surface View for AndEngine to use
 		this.mRenderSurfaceView = new RenderSurfaceView(this);
@@ -828,7 +824,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 								pSceneTouchEvent.getY());
 				final float localX = touchAreaLocalCoordinates[Constants.VERTEX_INDEX_X];
 				final float localY = touchAreaLocalCoordinates[Constants.VERTEX_INDEX_Y];
-				switch(buttonActive) {
+				switch (buttonActive) {
 				case NONE:
 					// No Action
 					break;
@@ -970,21 +966,21 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							s.setFont(measurementFont);
 							switch(ACadEngineActivity.currentColor)
 							{
-								case 0:
-									s.setColor(1f, .76f, .28f,.5f);
-									break;
-								case 1:
-									s.setColor(.64f, .82f, .1f,.5f);
-									break;
-								case 2:
-									s.setColor(.28f, .64f, 1f,.5f);
-									break;
-								case 3:
-									s.setColor(.64f, .28f, 1f,.5f);
-									break;
-								default:
-									s.setColor(Color.WHITE);
-									break;
+							case 0:
+								s.setColor(1f, .76f, .28f, .5f);
+								break;
+							case 1:
+								s.setColor(.64f, .82f, .1f, .5f);
+								break;
+							case 2:
+								s.setColor(.28f, .64f, 1f, .5f);
+								break;
+							case 3:
+								s.setColor(.64f, .28f, 1f, .5f);
+								break;
+							default:
+								s.setColor(Color.WHITE);
+								break;
 							}
 							landscapeLayer.attachChild(s);
 						}
@@ -1000,21 +996,21 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							s.setFont(measurementFont);
 							switch(ACadEngineActivity.currentColor)
 							{
-								case 0:
-									s.setColor(1f, .76f, .28f,.5f);
-									break;
-								case 1:
-									s.setColor(.64f, .82f, .1f,.5f);
-									break;
-								case 2:
-									s.setColor(.28f, .64f, 1f,.5f);
-									break;
-								case 3:
-									s.setColor(.64f, .28f, 1f,.5f);
-									break;
-								default:
-									s.setColor(Color.WHITE);
-									break;
+							case 0:
+								s.setColor(1f, .76f, .28f, .5f);
+								break;
+							case 1:
+								s.setColor(.64f, .82f, .1f, .5f);
+								break;
+							case 2:
+								s.setColor(.28f, .64f, 1f, .5f);
+								break;
+							case 3:
+								s.setColor(.64f, .28f, 1f, .5f);
+								break;
+							default:
+								s.setColor(Color.WHITE);
+								break;
 							}
 							landscapeLayer.attachChild(s);
 						}
@@ -1067,7 +1063,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						}
 					});
 					break;
-				default: //if not above, then assume a pipe
+				default: // if not above, then assume a pipe
 					currentColor = 3;
 					this.runOnUiThread(new Runnable() {
 						@Override
@@ -1076,15 +1072,13 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							MutablePolygon s = new MutableLine(localX, localY, vboManager);
 							s.setFont(measurementFont);
 							s.updateVertices(new float[] {-60, 60}, new float[] {0, 0});
-							hardscapeLayer.attachChild(s);
+							pipeLayer.attachChild(s);
 						}
 					});
 					break;
 				}
 				// Clear the active button indicator
 				buttonActive = ButtonActive.NONE;
-				activeButton = 999;
-				resetCurrentColor();
 			}
 			return true;
 		}
@@ -1122,7 +1116,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		isZooming = false;
 		disallowChildControl = false;
 	}
-	
+
 	/**
 	 * Set layer touchables
 	 */
@@ -1135,15 +1129,15 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				if (child instanceof MutablePolygon) {
 					if (groups[i] == group) {
 						// This layer is touchable
-						((MutablePolygon)child).setTouchableState(true);
-						resetCurrentColor();
+						((MutablePolygon) child).setTouchableState(true);
+						resetCurrentColor(i);
 					}
 					else {
 						// This layer is not touchable
-						if (((MutablePolygon)child).getState() == MutablePolygon.PolygonState.EDIT) {
+						if (((MutablePolygon) child).getState() == MutablePolygon.PolygonState.EDIT) {
 							((MutablePolygon)child).setState(MutablePolygon.PolygonState.VIEW);
 						}
-						((MutablePolygon)child).setTouchableState(false);
+						((MutablePolygon) child).setTouchableState(false);
 					}
 				}
 			}
@@ -1221,7 +1215,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				});
 			}
 		});
-		
+
 	}
 
 	/**
@@ -1252,58 +1246,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	}
 
 	/**
-	 * Method called when loading a layout
-	 */
-	public void loadFile() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		File mydir = new File(Environment.getExternalStorageDirectory(),
-				"/aCAD/");
-		builder.setTitle("Select File to Load");
-		final String List[] = mydir.list();
-		builder.setItems(List, new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				/*
-				 * getfileName = List[which]; dialog.cancel(); deleteChildren();
-				 * try { File file = new
-				 * File(Environment.getExternalStorageDirectory(),"/aCAD/"+
-				 * List[which]); FileInputStream fIn = new
-				 * FileInputStream(file); BufferedReader br = new
-				 * BufferedReader( new InputStreamReader(fIn)); StringBuilder
-				 * textInFile = new StringBuilder(); String line; while((line =
-				 * br.readLine())!= null) { textInFile.append(line);
-				 * textInFile.append("\n"); }
-				 * 
-				 * String text = textInFile.toString(); InputStream is = new
-				 * ByteArrayInputStream(text.getBytes()); JsonReader reader =
-				 * new JsonReader(new InputStreamReader(is));
-				 * 
-				 * reader.beginArray(); while(reader.hasNext()) {
-				 * reader.beginObject(); String layerName = reader.nextName();
-				 * // get the layer name
-				 * 
-				 * reader.beginArray(); while(reader.hasNext()) {
-				 * readPolygonObj(reader,layerName); } reader.endArray();
-				 * 
-				 * reader.endObject(); }
-				 * 
-				 * reader.endArray(); } catch (FileNotFoundException e1) {
-				 * e1.printStackTrace(); } catch
-				 * (IOException e) {
-				 * e.printStackTrace(); }
-				 * 
-				 * }
-				 */
-			}
-		});
-
-		builder.setNegativeButton("Cancel", null);
-		builder.create();
-		builder.show();
-	}
-
-	/**
 	 * Method called to read JSON Polygon object
 	 */
 	public void readPolygonObj(JsonReader reader, String layerName) {
@@ -1312,36 +1254,27 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			while (reader.hasNext()) {
 				String type = reader.nextName();
 				String polygonType = getPolygonType(type);
+
 				if (polygonType.equals("MutableEllipseArc")) {
 					readEllipseJson(reader, layerName);
 
+				} else if (polygonType.equals("MutableLine")) {
+					readMutablePolygonJson(reader, layerName);
+					jsons = new MutableLine((float) jsontouchX,
+							(float) jsontouchY, vboManager);
+					((MutablePolygon) jsons).setJSONVertices(jsonXvertex,
+							jsonXvertex);
+					((MutablePolygon) jsons).setFont(measurementFont);
+					getLayerEntity(layerName).attachChild(jsons);
+				} else if (polygonType.equals("MutableEllipse")) {
+					readMutablePolygonJson(reader, layerName);
+					jsons = new MutableRectangle((float) jsontouchX,
+							(float) jsontouchY, vboManager);
+					((MutablePolygon) jsons).setJSONVertices(jsonXvertex,
+							jsonXvertex);
+					((MutablePolygon) jsons).setFont(measurementFont);
+					getLayerEntity(layerName).attachChild(jsons);
 				}
-				/*
-				 * else if(polygonType.equals("MutablePolygon")) {
-				 * readMutablePolygonJson(reader,layerName); jsons = new
-				 * MutablePolygon((float)jsontouchX, (float) jsontouchY,
-				 * vboManager);
-				 * ((MutablePolygon)jsons).setJSONVertices(jsonXvertex,
-				 * jsonXvertex);
-				 * ((MutablePolygon)jsons).setFont(measurementFont);
-				 * getLayerEntity(layerName).attachChild(jsons);
-				 * 
-				 * } else if(polygonType.equals("MutableLine")) {
-				 * readMutablePolygonJson(reader,layerName); jsons = new
-				 * MutableLine((float)jsontouchX, (float) jsontouchY,
-				 * vboManager);
-				 * ((MutablePolygon)jsons).setJSONVertices(jsonXvertex,
-				 * jsonXvertex);
-				 * ((MutablePolygon)jsons).setFont(measurementFont);
-				 * getLayerEntity(layerName).attachChild(jsons); } else {
-				 * readMutablePolygonJson(reader,layerName); jsons = new
-				 * MutableRectangle((float)jsontouchX, (float) jsontouchY,
-				 * vboManager);
-				 * ((MutablePolygon)jsons).setJSONVertices(jsonXvertex,
-				 * jsonXvertex);
-				 * ((MutablePolygon)jsons).setFont(measurementFont);
-				 * getLayerEntity(layerName).attachChild(jsons); }
-				 */
 
 			}
 			reader.endObject();
@@ -1355,19 +1288,21 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	 * Method to return the Polygon type
 	 */
 	private String getPolygonType(String type) {
-		if (type.equals(jsonpolygonTypeArray[1])) {
+		if (type.equalsIgnoreCase("class socs.acad.MutablePolygon")) {
 			return "MutablePolygon";
-		} else if (type.equals(jsonpolygonTypeArray[2])) {
+		} else if (type.equalsIgnoreCase("class socs.acad.MutableRectangle")) {
 			return "MutableRectangle";
-		} else if (type.equals(jsonpolygonTypeArray[3])) {
+		} else if (type.equalsIgnoreCase("class socs.acad.MutableLine")) {
 			return "MutableLine";
-		} else {
+		} else if (type.equalsIgnoreCase("class socs.acad.MutableEllipseArc")) {
 			return "MutableEllipse";
+		} else {
+			return "";
 		}
 	}
 
 	/**
-	 * Method to read the Polygon infomration
+	 * Method to read the Polygon information
 	 */
 	private void readMutablePolygonJson(JsonReader reader, String layerName) {
 		try {
@@ -1379,11 +1314,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					String name = reader.nextName();
 					// Determine what we are trying to read
 					if (name.equals("PolygonTouchX")) {
-						jsontouchX = reader.nextDouble();
+						jsontouchX = (float) reader.nextDouble();
 					} else if (name.equals("PolygonTouchY")) {
-						jsontouchY = reader.nextDouble();
+						jsontouchY = (float) reader.nextDouble();
 					} else if (name.equals("PolygonAngle")) {
-						jsonpolyAngle = reader.nextDouble();
+						jsonpolyAngle = (float) reader.nextDouble();
 					} else if (name.equals("PolygonX")) {
 						reader.beginArray();
 						int j = 0;
@@ -1424,9 +1359,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				while (reader.hasNext()) {
 					String name = reader.nextName();
 					if (name.equals("TouchX")) {
-						jsontouchX = reader.nextDouble();
+						jsontouchX = (float) reader.nextDouble();
 					} else if (name.equals("TouchY")) {
-						jsontouchY = reader.nextDouble();
+						jsontouchY = (float) reader.nextDouble();
 					} else if (name.equals("EllipseAngle")) {
 						jsonEllipseAngle = reader.nextDouble();
 					} else if (name.equals("EllipseRadius")) {
@@ -1436,8 +1371,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				reader.endObject();
 			}
 			reader.endArray();
-			jsons = new MutableEllipseArc((float) jsontouchX,
-					(float) jsontouchY, vboManager);
+			jsons = new MutableEllipseArc(jsontouchX, jsontouchY, vboManager);
 			((MutablePolygon) jsons).setJSONEllipseVertices(jsonEllipseRadius,
 					jsonEllipseAngle);
 			((MutablePolygon) jsons).setFont(measurementFont);
@@ -1497,6 +1431,72 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	}
 
 	/**
+	 * Method to display the open dialog
+	 */
+	public void openDialog(final int Inputfrom) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		File mydir = new File(Environment.getExternalStorageDirectory(),
+				"/aCAD/");
+		builder.setTitle("Select a file to open");
+		final String List[] = mydir.list();
+		builder.setItems(List, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int selection) {
+				getfileName = List[selection];
+				dialog.cancel();
+				deleteChildren();
+
+				try {
+					File file = new File(Environment
+							.getExternalStorageDirectory(), "/aCAD/"
+							+ List[selection]);
+
+					FileInputStream fIn = new FileInputStream(file);
+					BufferedReader br = new BufferedReader(
+							new InputStreamReader(fIn));
+					StringBuilder textInFile = new StringBuilder();
+					String line;
+
+					while ((line = br.readLine()) != null) {
+						textInFile.append(line);
+						textInFile.append("\n");
+					}
+
+					br.close();
+
+					String text = textInFile.toString();
+					InputStream is = new ByteArrayInputStream(text.getBytes());
+					JsonReader reader = new JsonReader(
+							new InputStreamReader(is));
+
+					reader.beginArray();
+					reader.beginObject();
+					while (reader.hasNext()) {
+						String layerName = reader.nextName();
+
+						reader.beginArray();
+						while (reader.hasNext()) {
+							readPolygonObj(reader, layerName);
+						}
+						reader.endArray();
+					}
+					reader.endObject();
+					reader.endArray();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		builder.setNegativeButton("Cancel", null);
+		builder.create();
+		builder.show();
+	}
+
+	/**
 	 * Show the Exit dialog
 	 */
 	public void showExitDialog() {
@@ -1525,30 +1525,35 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	 * Save elements in the layout to a file
 	 */
 	public void saveSceneIterator(String fileName) {
-		Toast.makeText(ACadEngineActivity.this, "File Saved",
-				Toast.LENGTH_SHORT).show();
+		String toastMsg = "";
 		File mydir = new File(Environment.getExternalStorageDirectory()
 				+ "/aCAD/");
 
 		if (!mydir.exists()) {
 			mydir.mkdirs();
 		}
-		final File file = new File(mydir, fileName + ".txt");
+		final File file = new File(mydir, fileName);
 
 		try {
 			if (!file.exists()) {
 				file.createNewFile();
+			} else {
+				new File(mydir, fileName).delete();
+				file.createNewFile();
 			}
 		} catch (IOException e) {
+			toastMsg = e.toString();
 			e.printStackTrace();
 		}
 
 		FileWriter saveFilewriter = null;
+
 		try {
 			saveFilewriter = new FileWriter(file, true);
 			saveFilewriter.append("[");
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			toastMsg = e.toString();
+			e.printStackTrace();
 		}
 
 		for (int i = 1; i < mainScene.getChildCount(); i++) {
@@ -1574,6 +1579,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 									polygonArray);
 							newPolygon.put(polygonName);
 						} catch (JSONException e) {
+							toastMsg = e.toString();
 							e.printStackTrace();
 						}
 					}
@@ -1582,21 +1588,27 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					json.put(getLayer(i), newPolygon);
 					saveFilewriter.append(json.toString());
 				} catch (JSONException e) {
+					toastMsg = e.toString();
 					e.printStackTrace();
 				} catch (IOException e) {
+					toastMsg = e.toString();
 					e.printStackTrace();
 				}
 			}
-
 		}
 		try {
 			saveFilewriter.append("]");
 			saveFilewriter.flush();
 			saveFilewriter.close();
+
+			toastMsg = "File Saved";
 		} catch (IOException e) {
+			toastMsg = e.toString();
 			e.printStackTrace();
 		}
 
+		Toast.makeText(ACadEngineActivity.this, toastMsg, Toast.LENGTH_SHORT)
+				.show();
 	}
 
 	/**
@@ -1670,12 +1682,14 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	public String getLayer(int item) {
 		switch (item) {
 		case 1:
-			return ("hardscapeLayer");
+			return ("worldLayer");
 		case 2:
-			return ("landscapeLayer");
+			return ("hardscapeLayer");
 		case 3:
-			return ("sprinklerLayer");
+			return ("landscapeLayer");
 		case 4:
+			return ("sprinklerLayer");
+		case 5:
 			return ("pipeLayer");
 		default:
 			return null;
@@ -1693,7 +1707,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View linearLayout) {
 			buttonActive = ButtonActive.HOUSE;
-			activeButton = 0;
 		}
 	};
 	
@@ -1760,7 +1773,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		        view.setDrawingCacheEnabled(false);
 		}
 	};
-	
+
 	/**
 	 * Fence Button Listener
 	 */
@@ -1768,7 +1781,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View linearLayout) {
 			buttonActive = ButtonActive.FENCE;
-			activeButton = 1;
 		}
 	};
 
@@ -1779,7 +1791,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.DRIVEWAY;
-			activeButton = 3;
 		}
 	};
 
@@ -1790,7 +1801,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PATIO;
-			activeButton = 4;
 		}
 	};
 
@@ -1801,7 +1811,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.POOL;
-			activeButton = 5;
 		}
 	};
 
@@ -1812,7 +1821,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.SIDEWALK;
-			activeButton = 6;
 		}
 	};
 
@@ -1823,7 +1831,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.TREE;
-			activeButton = 7;
 		}
 	};
 
@@ -1834,7 +1841,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.SHRUB;
-			activeButton = 8;
 		}
 	};
 
@@ -1845,7 +1851,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.FLOWERBED;
-			activeButton = 9;
 		}
 	};
 
@@ -1856,7 +1861,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.SPRINKLER;
-			activeButton = 10;
 		}
 	};
 
@@ -1867,10 +1871,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.ROTORHEAD;
-			activeButton = 11;
 		}
 	};
-	
+
 	/**
 	 * 1/2 Pipe Button Listener
 	 */
@@ -1878,10 +1881,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPEONEHALF;
-			activeButton = 12;
 		}
 	};
-	
+
 	/**
 	 * 3/4 Pipe Button Listener
 	 */
@@ -1889,10 +1891,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPETHREEQUARTER;
-			activeButton = 13;
 		}
 	};
-	
+
 	/**
 	 * 1 Pipe Button Listener
 	 */
@@ -1900,10 +1901,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPEONE;
-			activeButton = 14;
 		}
 	};
-	
+
 	/**
 	 * 1 1/2 Pipe Button Listener
 	 */
@@ -1911,7 +1911,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPEONEANDONEHALF;
-			activeButton = 15;
 		}
 	};
 	/**
@@ -1921,10 +1920,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		@Override
 		public void onClick(View scrollView) {
 			buttonActive = ButtonActive.PIPETWO;
-			activeButton = 16;
 		}
 	};
-	
+
 	/**
 	 * New Button Listener
 	 */
@@ -1947,8 +1945,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	View.OnClickListener menuOpenListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View scrollView) {
-			Toast.makeText(ACadEngineActivity.this, "Open file clicked",
-					Toast.LENGTH_SHORT).show();
+			openDialog(0); // 0 for performing no action on the children
 		}
 	};
 
@@ -1963,17 +1960,6 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			} else {
 				saveSceneIterator(getfileName);
 			}
-		}
-	};
-
-	/**
-	 * Save As Button Listener
-	 */
-	View.OnClickListener menuSaveAsListener = new View.OnClickListener() {
-		@Override
-		public void onClick(View scrollView) {
-			Toast.makeText(ACadEngineActivity.this, "Save As clicked",
-					Toast.LENGTH_SHORT).show();
 		}
 	};
 
@@ -2003,7 +1989,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			});
 		}
 	};
-	
+
 	/**
 	 * hardscape remove
 	 */
@@ -2037,22 +2023,23 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	View.OnClickListener menuSettingsListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View scrollView) {
-			if (gridLineColorScheme == 0){
+			if (gridLineColorScheme == 0) {
 				gridLineColorScheme = 1;
 				mainScene.setBackground(new Background(.82f, .82f, .82f));
 				for (int i = 1; i < mainScene.getChildCount(); i++) {
 					IEntity childOfScene = mainScene.getChildByIndex(i);
 					if (childOfScene.getChildCount() != 0) {
+
 						for (int j = 0; j < childOfScene.getChildCount(); j++) {
 							// collection of polygon attributes
 							IEntity childOfLayer = childOfScene.getChildByIndex(j);
 							if (childOfLayer instanceof MutablePolygon) {
 								((MutablePolygon) childOfLayer).populateMeasurements();
 										}
+							}
 						}
 					}
-				} 
-			}
+				}
 			else {
 				gridLineColorScheme = 0;
 				mainScene.setBackground(new Background(.15f, .16f, .55f));
@@ -2064,7 +2051,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							IEntity childOfLayer = childOfScene.getChildByIndex(j);
 							if (childOfLayer instanceof MutablePolygon) {
 								((MutablePolygon) childOfLayer).populateMeasurements();
-										}
+							}
 						}
 					}
 				}
@@ -2077,25 +2064,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			});
 		}
 	};
-	public static void resetCurrentColor() {
-		if(buttonActive == ButtonActive.DRIVEWAY
-				|| buttonActive == ButtonActive.PATIO
-				|| buttonActive == ButtonActive.POOL
-				|| buttonActive == ButtonActive.SIDEWALK)
-			currentColor = 0;
-		else if(buttonActive == ButtonActive.TREE
-				|| buttonActive == ButtonActive.SHRUB
-				|| buttonActive == ButtonActive.FLOWERBED)
-			currentColor = 1;
-		else if(buttonActive == ButtonActive.SPRINKLER
-				|| buttonActive == ButtonActive.ROTORHEAD)
-			currentColor = 2;
-		else if(buttonActive == ButtonActive.PIPEONEHALF
-				|| buttonActive == ButtonActive.PIPEONE
-				|| buttonActive == ButtonActive.PIPEONEANDONEHALF
-				|| buttonActive == ButtonActive.PIPEONEONEANDONEQUARTER
-				|| buttonActive == ButtonActive.PIPETHREEQUARTER
-				|| buttonActive == ButtonActive.PIPETWO)
-			currentColor = 3;
+
+	public static void resetCurrentColor(int groupID) {	
+			currentColor = groupID -1;
 	}
 }
