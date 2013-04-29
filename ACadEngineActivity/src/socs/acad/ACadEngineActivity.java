@@ -11,8 +11,10 @@
 package socs.acad;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Vector;
 
 import org.andengine.engine.camera.Camera;
@@ -587,10 +589,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					R.drawable.ic_menu_sidewalk, "Sidewalk");
 			linearLayout.addView(button);
 			
-//			// Create sixth "delete" button
-//						button = createMenuButton(hardscapeRemove, lp,
-//								R.drawable.ic_menu_settings, "Delete");
-//						linearLayout.addView(button);
+			// Create sixth "delete" button
+						button = createMenuButton(hardscapeRemove, lp,
+								R.drawable.ic_menu_settings, "Delete");
+						linearLayout.addView(button);
 			break;
 		case 1:
 			// Landscape tab
@@ -700,6 +702,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			// Create color scheme button
 			button = createMenuButton(menuSettingsListener, lp,
 					R.drawable.ic_menu_settings, "Color Scheme");
+			linearLayout.addView(button);
+			
+			// Create export to png button
+			button = createMenuButton(menuExportToPng, lp,
+					R.drawable.ic_menu_settings, "Export");
 			linearLayout.addView(button);
 			break;
 		default:
@@ -1077,6 +1084,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				// Clear the active button indicator
 				buttonActive = ButtonActive.NONE;
 				activeButton = 999;
+				resetCurrentColor();
 			}
 			return true;
 		}
@@ -1128,8 +1136,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					if (groups[i] == group) {
 						// This layer is touchable
 						((MutablePolygon)child).setTouchableState(true);
-//						buttonActive = ButtonActive.NONE;
-//						activeButton = 999;
+						resetCurrentColor();
 					}
 					else {
 						// This layer is not touchable
@@ -1691,6 +1698,70 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	};
 	
 	/**
+	 * Export to Png Listener
+	 */
+	View.OnClickListener menuExportToPng = new View.OnClickListener() {
+		@Override
+		public void onClick(View scrollView) {
+			//http://code.google.com/p/android-screenshot-library/source/browse/demo/src/pl/polidea/asl/demo/ScreenshotDemo.java
+			/*this method requires root access
+			 * Process sh = null;
+			try {
+				sh = Runtime.getRuntime().exec("su", null,null);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			   OutputStream  os = sh.getOutputStream();
+			   try {
+				os.write(("/system/bin/screencap -p " + "/sdcard/jrtestsudo.png").getBytes("ASCII"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			            try {
+							os.flush();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			            try {
+							os.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			            try {
+							sh.waitFor();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						*/
+			
+			View view = getWindow().getDecorView().findViewById(android.R.id.content);
+				view.setDrawingCacheEnabled(true);
+				Bitmap screenshot = view.getDrawingCache(false);
+
+		        String filename = "pleasebeit.png";
+		        try {
+		            File f = new File(Environment.getExternalStorageDirectory(),
+		    				"/aCAD/" + filename);
+		            f.createNewFile();
+		            OutputStream outStream = new FileOutputStream(f);
+		            screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+		            outStream.close();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		        view.setDrawingCacheEnabled(false);
+		}
+	};
+	
+	/**
 	 * Fence Button Listener
 	 */
 	View.OnClickListener menuFenceListener = new View.OnClickListener() {
@@ -1933,33 +2004,33 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		}
 	};
 	
-//	/**
-//	 * hardscape remove
-//	 */
-//	View.OnClickListener hardscapeRemove = new View.OnClickListener() {
-//		@Override
-//		public void onClick(View scrollView) {
-//			for (int i = 1; i < mainScene.getChildCount(); i++) {
-//				IEntity childOfScene = mainScene.getChildByIndex(i);
-//				if (childOfScene.getChildCount() != 0) {
-//					for (int j = 0; j < childOfScene.getChildCount(); j++) {
-//						// collection of polygon attributes
-//						IEntity childOfLayer = childOfScene.getChildByIndex(j);
-//						if (childOfLayer instanceof MutablePolygon) {
-//							((MutablePolygon) childOfLayer).populateMeasurements();
-//							((MutablePolygon) childOfLayer).setColor(0f,0f,0f,0f);
-//									}
-//					}
-//				}
-//			}
-//			instance.runOnUpdateThread(new Runnable() {
-//				@Override
-//				public void run() {
-//					mainScene.resetView();
-//				}
-//			});
-//		}		
-//	};
+	/**
+	 * hardscape remove
+	 */
+	View.OnClickListener hardscapeRemove = new View.OnClickListener() {
+		@Override
+		public void onClick(View scrollView) {
+			for (int i = 1; i < mainScene.getChildCount(); i++) {
+				IEntity childOfScene = mainScene.getChildByIndex(i);
+				if (childOfScene.getChildCount() != 0) {
+					for (int j = 0; j < childOfScene.getChildCount(); j++) {
+						// collection of polygon attributes
+						final IEntity childOfLayer = childOfScene.getChildByIndex(j);
+						if (childOfLayer instanceof MutablePolygon) {
+							if(((MutablePolygon) childOfLayer).polygonState.name().equalsIgnoreCase("Edit"))
+								instance.runOnUpdateThread(new Runnable() {
+									@Override
+									public void run() { 
+										((MutablePolygon) childOfLayer).detach();
+									}
+							});
+						}
+					}
+				}
+			}
+		}		
+	};
+	
 	/**
 	 * New Button Listener
 	 */
