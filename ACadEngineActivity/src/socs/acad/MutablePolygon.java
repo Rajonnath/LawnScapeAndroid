@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import socs.acad.ACadEngineActivity.ButtonActive;
 
 import android.util.FloatMath;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 public class MutablePolygon extends Shape {
 	// Constants
@@ -119,6 +120,8 @@ public class MutablePolygon extends Shape {
 		
 		// Add the display shape
 		regenerateShape();
+		regenerateOutline();
+		refreshColor();
 		regenerateOutline();
 		setState(PolygonState.VIEW);
 	}
@@ -216,25 +219,31 @@ public class MutablePolygon extends Shape {
 		outline = new PolyLine(0, 0, outlineVertexX, outlineVertexY, vboManager);
 		outline.setLineWidth(3);
 		
-		switch(ACadEngineActivity.currentColor)
+		if(ACadEngineActivity.gridLineColorScheme == 0)
 		{
-			case 0:
-				outline.setColor(1f, .76f, .28f);
-				break;
-			case 1:
-				outline.setColor(.64f, .82f, .1f);
-				break;
-			case 2:
-				outline.setColor(.28f, .64f, 1f);
-				break;
-			case 3:
-				outline.setColor(.64f, .28f, 1f);
-				break;
-			default:
-				break;
+			switch(ACadEngineActivity.currentColor)
+			{
+				case 0:
+					outline.setColor(1f, .76f, .28f);
+					break;
+				case 1:
+					outline.setColor(.64f, .82f, .1f);
+					break;
+				case 2:
+					outline.setColor(.28f, .64f, 1f);
+					break;
+				case 3:
+					outline.setColor(.64f, .28f, 1f);
+					break;
+				default:
+					break;
+			}
+		}
+		else{
+			outline.setColor(0f, .0f, .0f);
 		}
 		
-		outline.setAlpha(0);
+		
 		outline.setAlpha(1f);
 		this.attachChild(outline);
 	}
@@ -1019,6 +1028,7 @@ public class MutablePolygon extends Shape {
 			// Set the background color.
 			if (displayShape != null) {
 				displayShape.setColor(.8f, .8f, .8f, .6f);
+				regenerateOutline();
 			}
 			break;
 		case VIEW:
@@ -1026,6 +1036,7 @@ public class MutablePolygon extends Shape {
 			// Set the background color
 			if (displayShape != null) {
 				displayShape.setColor(0f, 0f, 0f, 0f);
+				regenerateOutline();
 			}
 			break;
 		}

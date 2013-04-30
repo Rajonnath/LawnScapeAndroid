@@ -1,9 +1,9 @@
 <resources>
 
-    <string name="app_name">aCAD</string>
+    <string name="app_name">W.I.C.A.D.</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_acad_engine">aCAD</string>
+    <string name="title_activity_acad_engine">W.I.C.A.D.</string>
     <string name="OK">OK</string>
 
 </resources>

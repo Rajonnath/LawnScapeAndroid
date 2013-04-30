@@ -98,7 +98,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	private int CAMERA_HEIGHT;
 	final private int MENU_WIDTH = 200;
 	static final float MENU_WIDTH_RATIO = 0.15f;
-	private BaseGameActivity instance = null;
+	private static BaseGameActivity instance = null;
 
 	// Layout related variables
 	public FrameLayout frameLayout;
@@ -111,18 +111,20 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	// AndEngine Variables
 	private Camera camera;
 	private Scene splashScene;
-	private ACadScene mainScene;
+	private static ACadScene mainScene;
 	private HUD hud; // Heads Up Display (AndEngine concept)
 	private PinchZoomDetector mPinchZoomDetector;
 	private float mPinchZoomStartedCameraZoomFactor;
 	private float lastX, lastY;
 
 	// Display Layers used within the scene
-	private GroupEntity worldLayer, hardscapeLayer, landscapeLayer, sprinklerLayer, pipeLayer;
+	private GroupEntity worldLayer, hardscapeLayer, landscapeLayer,
+			sprinklerLayer, pipeLayer;
 	private Grid gridLayer;
 
 	// Tabbed Menu
-	private String[] menuItems = new String[] { "Hardscape", "Landscape", "Sprinkler", "Pipe", "Menu" };
+	private String[] menuItems = new String[] { "Hardscape", "Landscape",
+			"Sprinkler", "Pipe", "Menu" };
 	private ImageView[] tabImage;
 	private int tabWidth, tabHeight;
 
@@ -183,9 +185,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 
 	// ENUM for tracking which button was recently pressed
 	public static enum ButtonActive {
-		NONE, HOUSE, FENCE, DRIVEWAY, PATIO, POOL, SIDEWALK, TREE, SHRUB, FLOWERBED, SPRINKLER, 
-		ROTORHEAD, PIPEONEHALF,PIPEONE,PIPEONEANDONEHALF,PIPEONEONEANDONEQUARTER,PIPETHREEQUARTER,PIPETWO,
-		SPRINKLERREMOVE
+		NONE, HOUSE, FENCE, DRIVEWAY, PATIO, POOL, SIDEWALK, TREE, SHRUB, FLOWERBED, SPRINKLER, ROTORHEAD, PIPEONEHALF, PIPEONE, PIPEONEANDONEHALF, PIPEONEONEANDONEQUARTER, PIPETHREEQUARTER, PIPETWO, SPRINKLERREMOVE
 	}
 
 	private static ButtonActive buttonActive = ButtonActive.NONE;
@@ -204,7 +204,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		CAMERA_HEIGHT = instance.getResources().getDisplayMetrics().heightPixels;
 		camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 
-		// Lock orientation to Landscape, but flip to avoid upside down operation
+		// Lock orientation to Landscape, but flip to avoid upside down
+		// operation
 		EngineOptions engineOptions = new EngineOptions(true,
 				ScreenOrientation.LANDSCAPE_SENSOR, new FillResolutionPolicy(),
 				camera);
@@ -518,8 +519,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	}
 
 	/**
-	 * Create a menu button with the appropriate information.
-	 * Used to populate the tab menu buttons and reduce duplicated code.
+	 * Create a menu button with the appropriate information. Used to populate
+	 * the tab menu buttons and reduce duplicated code.
 	 */
 	public Button createMenuButton(View.OnClickListener pListener,
 			LinearLayout.LayoutParams pLayoutParams, int pImageID,
@@ -589,11 +590,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			button = createMenuButton(menuSidewalkListener, lp,
 					R.drawable.ic_menu_sidewalk, "Sidewalk");
 			linearLayout.addView(button);
-			
+
 			// Create sixth "delete" button
-						button = createMenuButton(hardscapeRemove, lp,
-								R.drawable.ic_menu_settings, "Delete");
-						linearLayout.addView(button);
+			button = createMenuButton(Remove, lp,
+					R.drawable.delete, "Delete");
+			linearLayout.addView(button);
 			break;
 		case 1:
 			// Landscape tab
@@ -616,6 +617,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					R.drawable.ic_menu_flower_bed, "Flowerbed");
 			linearLayout.addView(button);
 
+			// Create sixth "delete" button
+			button = createMenuButton(Remove, lp,
+					R.drawable.delete, "Delete");
+			linearLayout.addView(button);
 			break;
 		case 2:
 			// Sprinkler tab
@@ -632,6 +637,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			button = createMenuButton(menuRotorheadListener, lp,
 					R.drawable.ic_menu_sprinkler_head, "Rotorhead");
 			linearLayout.addView(button);
+			
+			// Create sixth "delete" button
+						button = createMenuButton(Remove, lp,
+								R.drawable.delete, "Delete");
+						linearLayout.addView(button);
 			break;
 		case 3:
 			// Pipe tab
@@ -663,7 +673,12 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			button = createMenuButton(menuPipeTwoListener, lp,
 					R.drawable.ic_pipe_two, "Pipe");
 			linearLayout.addView(button);
-			break;
+			
+			// Create sixth "delete" button
+			button = createMenuButton(Remove, lp,
+					R.drawable.delete, "Delete");
+			linearLayout.addView(button);
+			break; 
 		case 4:
 			// Menu tab
 			setLayerTouchable(worldLayer);
@@ -836,15 +851,19 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							dialogGetDimensions(new Runnable() {
 								@Override
 								public void run() {
-									// This code is run after the OK button is clicked
+									// This code is run after the OK button is
+									// clicked
 									float halfWidth = dialogWidth / 2;
 									float halfHeight = dialogHeight / 2;
 									// Add the object to the correct layer
-									MutablePolygon s = new MutablePolygon(localX, localY, vboManager);
+									MutablePolygon s = new MutablePolygon(
+											localX, localY, vboManager);
 									s.setFont(measurementFont);
-									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
-											-halfWidth }, new float[] { -halfHeight, -halfHeight,
-											halfHeight, halfHeight });
+									s.updateVertices(new float[] { -halfWidth,
+											halfWidth, halfWidth, -halfWidth },
+											new float[] { -halfHeight,
+													-halfHeight, halfHeight,
+													halfHeight });
 									hardscapeLayer.attachChild(s);
 								}
 							});
@@ -859,15 +878,19 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							dialogGetDimensions(new Runnable() {
 								@Override
 								public void run() {
-									// This code is run after the OK button is clicked
+									// This code is run after the OK button is
+									// clicked
 									float halfWidth = dialogWidth / 2;
 									float halfHeight = dialogHeight / 2;
 									// Add the object to the correct layer
-									MutablePolygon s = new MutablePolygon(localX, localY, vboManager);
+									MutablePolygon s = new MutablePolygon(
+											localX, localY, vboManager);
 									s.setFont(measurementFont);
-									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
-											-halfWidth }, new float[] { -halfHeight, -halfHeight,
-											halfHeight, halfHeight });
+									s.updateVertices(new float[] { -halfWidth,
+											halfWidth, halfWidth, -halfWidth },
+											new float[] { -halfHeight,
+													-halfHeight, halfHeight,
+													halfHeight });
 									hardscapeLayer.attachChild(s);
 								}
 							});
@@ -882,15 +905,19 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							dialogGetDimensions(new Runnable() {
 								@Override
 								public void run() {
-									// This code is run after the OK button is clicked
+									// This code is run after the OK button is
+									// clicked
 									float halfWidth = dialogWidth / 2;
 									float halfHeight = dialogHeight / 2;
 									// Add the object to the correct layer
-									MutablePolygon s = new MutablePolygon(localX, localY, vboManager);
+									MutablePolygon s = new MutablePolygon(
+											localX, localY, vboManager);
 									s.setFont(measurementFont);
-									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
-											-halfWidth }, new float[] { -halfHeight, -halfHeight,
-											halfHeight, halfHeight });
+									s.updateVertices(new float[] { -halfWidth,
+											halfWidth, halfWidth, -halfWidth },
+											new float[] { -halfHeight,
+													-halfHeight, halfHeight,
+													halfHeight });
 									hardscapeLayer.attachChild(s);
 								}
 							});
@@ -903,9 +930,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						@Override
 						public void run() {
 							// Add the object to the correct layer
-							MutablePolygon s = new MutableLine(localX, localY, vboManager);
+							MutablePolygon s = new MutableLine(localX, localY,
+									vboManager);
 							s.setFont(measurementFont);
-							s.updateVertices(new float[] {-60, 60}, new float[] {0, 0});
+							s.updateVertices(new float[] { -60, 60 },
+									new float[] { 0, 0 });
 							hardscapeLayer.attachChild(s);
 						}
 					});
@@ -918,15 +947,19 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							dialogGetDimensions(new Runnable() {
 								@Override
 								public void run() {
-									// This code is run after the OK button is clicked
+									// This code is run after the OK button is
+									// clicked
 									float halfWidth = dialogWidth / 2;
 									float halfHeight = dialogHeight / 2;
 									// Add the object to the correct layer
-									MutablePolygon s = new MutablePolygon(localX, localY, vboManager);
+									MutablePolygon s = new MutablePolygon(
+											localX, localY, vboManager);
 									s.setFont(measurementFont);
-									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
-											-halfWidth }, new float[] { -halfHeight, -halfHeight,
-											halfHeight, halfHeight });
+									s.updateVertices(new float[] { -halfWidth,
+											halfWidth, halfWidth, -halfWidth },
+											new float[] { -halfHeight,
+													-halfHeight, halfHeight,
+													halfHeight });
 									hardscapeLayer.attachChild(s);
 								}
 							});
@@ -941,15 +974,19 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							dialogGetDimensions(new Runnable() {
 								@Override
 								public void run() {
-									// This code is run after the OK button is clicked
+									// This code is run after the OK button is
+									// clicked
 									float halfWidth = dialogWidth / 2;
 									float halfHeight = dialogHeight / 2;
 									// Add the object to the correct layer
-									MutablePolygon s = new MutableRectangle(localX, localY, vboManager);
+									MutablePolygon s = new MutableRectangle(
+											localX, localY, vboManager);
 									s.setFont(measurementFont);
-									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
-											-halfWidth }, new float[] { -halfHeight, -halfHeight,
-											halfHeight, halfHeight });
+									s.updateVertices(new float[] { -halfWidth,
+											halfWidth, halfWidth, -halfWidth },
+											new float[] { -halfHeight,
+													-halfHeight, halfHeight,
+													halfHeight });
 									hardscapeLayer.attachChild(s);
 								}
 							});
@@ -962,10 +999,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						@Override
 						public void run() {
 							// Add the object to the correct layer
-							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
+							MutablePolygon s = new MutableEllipseArc(localX,
+									localY, vboManager);
 							s.setFont(measurementFont);
-							switch(ACadEngineActivity.currentColor)
-							{
+							switch (ACadEngineActivity.currentColor) {
 							case 0:
 								s.setColor(1f, .76f, .28f, .5f);
 								break;
@@ -992,10 +1029,10 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						@Override
 						public void run() {
 							// Add the object to the correct layer
-							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
+							MutablePolygon s = new MutableEllipseArc(localX,
+									localY, vboManager);
 							s.setFont(measurementFont);
-							switch(ACadEngineActivity.currentColor)
-							{
+							switch (ACadEngineActivity.currentColor) {
 							case 0:
 								s.setColor(1f, .76f, .28f, .5f);
 								break;
@@ -1024,15 +1061,19 @@ public class ACadEngineActivity extends BaseGameActivity implements
 							dialogGetDimensions(new Runnable() {
 								@Override
 								public void run() {
-									// This code is run after the OK button is clicked
+									// This code is run after the OK button is
+									// clicked
 									float halfWidth = dialogWidth / 2;
 									float halfHeight = dialogHeight / 2;
 									// Add the object to the correct layer
-									MutablePolygon s = new MutablePolygon(localX, localY, vboManager);
+									MutablePolygon s = new MutablePolygon(
+											localX, localY, vboManager);
 									s.setFont(measurementFont);
-									s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
-											-halfWidth }, new float[] { -halfHeight, -halfHeight,
-											halfHeight, halfHeight });
+									s.updateVertices(new float[] { -halfWidth,
+											halfWidth, halfWidth, -halfWidth },
+											new float[] { -halfHeight,
+													-halfHeight, halfHeight,
+													halfHeight });
 									landscapeLayer.attachChild(s);
 								}
 							});
@@ -1045,7 +1086,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						@Override
 						public void run() {
 							// Add the object to the correct layer
-							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
+							MutablePolygon s = new MutableEllipseArc(localX,
+									localY, vboManager);
 							s.setFont(measurementFont);
 							sprinklerLayer.attachChild(s);
 						}
@@ -1057,7 +1099,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						@Override
 						public void run() {
 							// Add the object to the correct layer
-							MutablePolygon s = new MutableEllipseArc(localX, localY, vboManager);
+							MutablePolygon s = new MutableEllipseArc(localX,
+									localY, vboManager);
 							s.setFont(measurementFont);
 							sprinklerLayer.attachChild(s);
 						}
@@ -1069,9 +1112,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						@Override
 						public void run() {
 							// Add the object to the correct layer
-							MutablePolygon s = new MutableLine(localX, localY, vboManager);
+							MutablePolygon s = new MutableLine(localX, localY,
+									vboManager);
 							s.setFont(measurementFont);
-							s.updateVertices(new float[] {-60, 60}, new float[] {0, 0});
+							s.updateVertices(new float[] { -60, 60 },
+									new float[] { 0, 0 });
 							pipeLayer.attachChild(s);
 						}
 					});
@@ -1082,13 +1127,15 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			}
 			return true;
 		}
-		// If the user is just now touching the screen, save the initial coordinates
+		// If the user is just now touching the screen, save the initial
+		// coordinates
 		if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_DOWN) {
 			lastX = pSceneTouchEvent.getX();
 			lastY = pSceneTouchEvent.getY();
 			return true;
 		}
-		// If the user is dragging, then use the previous coordinates to determine
+		// If the user is dragging, then use the previous coordinates to
+		// determine
 		// where everything should be moved.
 		if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_MOVE) {
 			float currentX = pSceneTouchEvent.getX();
@@ -1121,7 +1168,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	 * Set layer touchables
 	 */
 	public void setLayerTouchable(GroupEntity group) {
-		GroupEntity groups[] = new GroupEntity[]{worldLayer, hardscapeLayer, landscapeLayer, sprinklerLayer, pipeLayer};
+		GroupEntity groups[] = new GroupEntity[] { worldLayer, hardscapeLayer,
+				landscapeLayer, sprinklerLayer, pipeLayer };
 		IEntity child;
 		for (int i = 0; i < groups.length; i++) {
 			for (int j = 0; j < groups[i].getChildCount(); j++) {
@@ -1131,11 +1179,11 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						// This layer is touchable
 						((MutablePolygon) child).setTouchableState(true);
 						resetCurrentColor(i);
-					}
-					else {
+					} else {
 						// This layer is not touchable
 						if (((MutablePolygon) child).getState() == MutablePolygon.PolygonState.EDIT) {
-							((MutablePolygon)child).setState(MutablePolygon.PolygonState.VIEW);
+							((MutablePolygon) child)
+									.setState(MutablePolygon.PolygonState.VIEW);
 						}
 						((MutablePolygon) child).setTouchableState(false);
 					}
@@ -1167,7 +1215,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	@Override
 	public void onPinchZoom(final PinchZoomDetector pPinchZoomDetector,
 			final TouchEvent pTouchEvent, final float pZoomFactor) {
-		mainScene.setScale(this.mPinchZoomStartedCameraZoomFactor * pZoomFactor);
+		mainScene
+				.setScale(this.mPinchZoomStartedCameraZoomFactor * pZoomFactor);
 	}
 
 	/**
@@ -1176,7 +1225,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	@Override
 	public void onPinchZoomFinished(final PinchZoomDetector pPinchZoomDetector,
 			final TouchEvent pTouchEvent, final float pZoomFactor) {
-		mainScene.setScale(this.mPinchZoomStartedCameraZoomFactor * pZoomFactor);
+		mainScene
+				.setScale(this.mPinchZoomStartedCameraZoomFactor * pZoomFactor);
 	}
 
 	/**
@@ -1199,9 +1249,9 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				// Add the object to the correct layer
 				MutablePolygon s = new MutablePolygon(0, 0, vboManager);
 				((MutablePolygon) s).setFont(measurementFont);
-				s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth,
-						-halfWidth }, new float[] { -halfHeight, -halfHeight,
-						halfHeight, halfHeight });
+				s.updateVertices(new float[] { -halfWidth, halfWidth,
+						halfWidth, -halfWidth }, new float[] { -halfHeight,
+						-halfHeight, halfHeight, halfHeight });
 				worldLayer.attachChild(s);
 
 				// The reset cannot be run on this thread.
@@ -1709,68 +1759,49 @@ public class ACadEngineActivity extends BaseGameActivity implements
 			buttonActive = ButtonActive.HOUSE;
 		}
 	};
-	
+
 	/**
 	 * Export to Png Listener
 	 */
 	View.OnClickListener menuExportToPng = new View.OnClickListener() {
 		@Override
 		public void onClick(View scrollView) {
-			//http://code.google.com/p/android-screenshot-library/source/browse/demo/src/pl/polidea/asl/demo/ScreenshotDemo.java
-			/*this method requires root access
-			 * Process sh = null;
-			try {
-				sh = Runtime.getRuntime().exec("su", null,null);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			   OutputStream  os = sh.getOutputStream();
-			   try {
-				os.write(("/system/bin/screencap -p " + "/sdcard/jrtestsudo.png").getBytes("ASCII"));
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			            try {
-							os.flush();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-			            try {
-							os.close();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-			            try {
-							sh.waitFor();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						*/
-			
-			View view = getWindow().getDecorView().findViewById(android.R.id.content);
-				view.setDrawingCacheEnabled(true);
-				Bitmap screenshot = view.getDrawingCache(false);
+			// http://code.google.com/p/android-screenshot-library/source/browse/demo/src/pl/polidea/asl/demo/ScreenshotDemo.java
+			/*
+			 * this method requires root access Process sh = null; try { sh =
+			 * Runtime.getRuntime().exec("su", null,null); } catch (IOException
+			 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
+			 * OutputStream os = sh.getOutputStream(); try {
+			 * os.write(("/system/bin/screencap -p " +
+			 * "/sdcard/jrtestsudo.png").getBytes("ASCII")); } catch
+			 * (UnsupportedEncodingException e) { // TODO Auto-generated catch
+			 * block e.printStackTrace(); } catch (IOException e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); } try {
+			 * os.flush(); } catch (IOException e) { // TODO Auto-generated
+			 * catch block e.printStackTrace(); } try { os.close(); } catch
+			 * (IOException e) { // TODO Auto-generated catch block
+			 * e.printStackTrace(); } try { sh.waitFor(); } catch
+			 * (InterruptedException e) { // TODO Auto-generated catch block
+			 * e.printStackTrace(); }
+			 */
 
-		        String filename = "pleasebeit.png";
-		        try {
-		            File f = new File(Environment.getExternalStorageDirectory(),
-		    				"/aCAD/" + filename);
-		            f.createNewFile();
-		            OutputStream outStream = new FileOutputStream(f);
-		            screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-		            outStream.close();
-		        } catch (IOException e) {
-		            e.printStackTrace();
-		        }
-		        view.setDrawingCacheEnabled(false);
+			View view = getWindow().getDecorView().findViewById(
+					android.R.id.content);
+			view.setDrawingCacheEnabled(true);
+			Bitmap screenshot = view.getDrawingCache(false);
+
+			String filename = "pleasebeit.png";
+			try {
+				File f = new File(Environment.getExternalStorageDirectory(),
+						"/aCAD/" + filename);
+				f.createNewFile();
+				OutputStream outStream = new FileOutputStream(f);
+				screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+				outStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			view.setDrawingCacheEnabled(false);
 		}
 	};
 
@@ -1993,7 +2024,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	/**
 	 * hardscape remove
 	 */
-	View.OnClickListener hardscapeRemove = new View.OnClickListener() {
+	View.OnClickListener Remove = new View.OnClickListener() {
 		@Override
 		public void onClick(View scrollView) {
 			for (int i = 1; i < mainScene.getChildCount(); i++) {
@@ -2001,22 +2032,25 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				if (childOfScene.getChildCount() != 0) {
 					for (int j = 0; j < childOfScene.getChildCount(); j++) {
 						// collection of polygon attributes
-						final IEntity childOfLayer = childOfScene.getChildByIndex(j);
+						final IEntity childOfLayer = childOfScene
+								.getChildByIndex(j);
 						if (childOfLayer instanceof MutablePolygon) {
-							if(((MutablePolygon) childOfLayer).polygonState.name().equalsIgnoreCase("Edit"))
+							if (((MutablePolygon) childOfLayer).polygonState
+									.name().equalsIgnoreCase("Edit"))
 								instance.runOnUpdateThread(new Runnable() {
 									@Override
-									public void run() { 
-										((MutablePolygon) childOfLayer).detach();
+									public void run() {
+										((MutablePolygon) childOfLayer)
+										.setChildrenVisible(false);
 									}
-							});
+								});
 						}
 					}
 				}
 			}
-		}		
+		}
 	};
-	
+
 	/**
 	 * New Button Listener
 	 */
@@ -2032,15 +2066,22 @@ public class ACadEngineActivity extends BaseGameActivity implements
 
 						for (int j = 0; j < childOfScene.getChildCount(); j++) {
 							// collection of polygon attributes
-							IEntity childOfLayer = childOfScene.getChildByIndex(j);
+							IEntity childOfLayer = childOfScene
+									.getChildByIndex(j);
 							if (childOfLayer instanceof MutablePolygon) {
-								((MutablePolygon) childOfLayer).populateMeasurements();
-										}
+								((MutablePolygon) childOfLayer)
+										.populateMeasurements();
+								((MutablePolygon) childOfLayer)
+										.populateMeasurements();
+								((MutablePolygon) childOfLayer).outline
+										.setColor(Color.BLACK);
+								((MutablePolygon) childOfLayer)
+										.regenerateOutline();
 							}
 						}
 					}
 				}
-			else {
+			} else {
 				gridLineColorScheme = 0;
 				mainScene.setBackground(new Background(.15f, .16f, .55f));
 				for (int i = 1; i < mainScene.getChildCount(); i++) {
@@ -2048,10 +2089,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					if (childOfScene.getChildCount() != 0) {
 						for (int j = 0; j < childOfScene.getChildCount(); j++) {
 							// collection of polygon attributes
-							IEntity childOfLayer = childOfScene.getChildByIndex(j);
-							if (childOfLayer instanceof MutablePolygon) {
-								((MutablePolygon) childOfLayer).populateMeasurements();
-							}
+							IEntity childOfLayer = childOfScene
+									.getChildByIndex(j);
 						}
 					}
 				}
@@ -2065,7 +2104,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 		}
 	};
 
-	public static void resetCurrentColor(int groupID) {	
-			currentColor = groupID -1;
+	public static void resetCurrentColor(int groupID) {
+		if (gridLineColorScheme == 0)
+			currentColor = groupID - 1;
 	}
 }
