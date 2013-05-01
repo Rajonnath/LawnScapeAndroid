@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.Vector;
 
 import org.andengine.engine.camera.Camera;
@@ -145,8 +147,8 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	// File saving / JSON related
 	private String getfileName = null;
 	float jsontouchY, jsontouchX, jsonpolyAngle;
-	float[] jsonXvertex = new float[4];
-	float[] jsonYvertex = new float[4];
+	float[] jsonXvertex = new float[100];
+	float[] jsonYvertex = new float[100];
 	private double jsonEllipseRadius;
 	private double jsonEllipseAngle;
 	private Shape jsons;
@@ -1313,19 +1315,18 @@ public class ACadEngineActivity extends BaseGameActivity implements
 					jsons = new MutableLine((float) jsontouchX,
 							(float) jsontouchY, vboManager);
 					((MutablePolygon) jsons).setJSONVertices(jsonXvertex,
-							jsonXvertex);
+							jsonYvertex);
 					((MutablePolygon) jsons).setFont(measurementFont);
 					getLayerEntity(layerName).attachChild(jsons);
-				} else if (polygonType.equals("MutableEllipse")) {
+				} else  {
 					readMutablePolygonJson(reader, layerName);
 					jsons = new MutableRectangle((float) jsontouchX,
 							(float) jsontouchY, vboManager);
 					((MutablePolygon) jsons).setJSONVertices(jsonXvertex,
-							jsonXvertex);
+							jsonYvertex);
 					((MutablePolygon) jsons).setFont(measurementFont);
 					getLayerEntity(layerName).attachChild(jsons);
 				}
-
 			}
 			reader.endObject();
 		} catch (IOException e) {
@@ -1381,7 +1382,7 @@ public class ACadEngineActivity extends BaseGameActivity implements
 						reader.beginArray();
 						int k = 0;
 						while (reader.hasNext()) {
-							jsonXvertex[k] = (float) (reader.nextDouble());
+							jsonYvertex[k] = (float) (reader.nextDouble());
 							k++;
 						}
 						reader.endArray();
@@ -1766,31 +1767,62 @@ public class ACadEngineActivity extends BaseGameActivity implements
 	View.OnClickListener menuExportToPng = new View.OnClickListener() {
 		@Override
 		public void onClick(View scrollView) {
-			// http://code.google.com/p/android-screenshot-library/source/browse/demo/src/pl/polidea/asl/demo/ScreenshotDemo.java
-			/*
-			 * this method requires root access Process sh = null; try { sh =
-			 * Runtime.getRuntime().exec("su", null,null); } catch (IOException
-			 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
-			 * OutputStream os = sh.getOutputStream(); try {
-			 * os.write(("/system/bin/screencap -p " +
-			 * "/sdcard/jrtestsudo.png").getBytes("ASCII")); } catch
-			 * (UnsupportedEncodingException e) { // TODO Auto-generated catch
-			 * block e.printStackTrace(); } catch (IOException e) { // TODO
-			 * Auto-generated catch block e.printStackTrace(); } try {
-			 * os.flush(); } catch (IOException e) { // TODO Auto-generated
-			 * catch block e.printStackTrace(); } try { os.close(); } catch
-			 * (IOException e) { // TODO Auto-generated catch block
-			 * e.printStackTrace(); } try { sh.waitFor(); } catch
-			 * (InterruptedException e) { // TODO Auto-generated catch block
-			 * e.printStackTrace(); }
-			 */
+			java.util.Date date= new java.util.Date();
+			String filename = "";
+			String temp = getfileName + "@";
+			 
+			if(!temp.startsWith("null"))
+				filename = getfileName + " ";
+			
+			String s = new Timestamp(date.getTime()).toString();
+			s = s.replace(":", ".").substring(0, s.length() - 4);
+			filename = filename + s;
+			
+			String msg= "Filed Saved: /ACaD/"  + filename;
+			
+			 //this method requires root access Process sh = null; try { sh =
+			Process sh = null;
+			try {
+				sh = Runtime.getRuntime().exec("su", null,null);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			OutputStream  os = sh.getOutputStream();
+			try {
+				os.write(("/system/bin/screencap -p " + "/ACaD/" + filename).getBytes("ASCII"));
+				Toast.makeText(ACadEngineActivity.this, msg, Toast.LENGTH_SHORT).show();
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			            try {
+							os.flush();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			            try {
+							os.close();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			            try {
+							sh.waitFor();
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 
 			View view = getWindow().getDecorView().findViewById(
 					android.R.id.content);
 			view.setDrawingCacheEnabled(true);
 			Bitmap screenshot = view.getDrawingCache(false);
-
-			String filename = "pleasebeit.png";
+			
 			try {
 				File f = new File(Environment.getExternalStorageDirectory(),
 						"/aCAD/" + filename);
@@ -1798,11 +1830,13 @@ public class ACadEngineActivity extends BaseGameActivity implements
 				OutputStream outStream = new FileOutputStream(f);
 				screenshot.compress(Bitmap.CompressFormat.PNG, 100, outStream);
 				outStream.close();
+				Toast.makeText(ACadEngineActivity.this, msg, Toast.LENGTH_SHORT).show();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			view.setDrawingCacheEnabled(false);
 		}
+		
 	};
 
 	/**
