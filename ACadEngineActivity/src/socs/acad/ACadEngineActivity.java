@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Vector;
@@ -598,7 +599,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				button = createMenuButton(menuSidewalkListener, lp, R.drawable.ic_menu_sidewalk, "Sidewalk");
 				linearLayout.addView(button);
 
-				// Create sixth "delete" button
+				// Create seventh "delete" button
 				button = createMenuButton(Remove, lp, R.drawable.delete, "Delete");
 				linearLayout.addView(button);
 				break;
@@ -620,7 +621,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				button = createMenuButton(menuFlowerbedListener, lp, R.drawable.ic_menu_flower_bed, "Flowerbed");
 				linearLayout.addView(button);
 
-				// Create sixth "delete" button
+				// Create fourth "delete" button
 				button = createMenuButton(Remove, lp, R.drawable.delete, "Delete");
 				linearLayout.addView(button);
 				break;
@@ -638,7 +639,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				button = createMenuButton(menuRotorheadListener, lp, R.drawable.ic_menu_sprinkler_head, "Rotorhead");
 				linearLayout.addView(button);
 
-				// Create sixth "delete" button
+				// Create "delete" button
 				button = createMenuButton(Remove, lp, R.drawable.delete, "Delete");
 				linearLayout.addView(button);
 				break;
@@ -668,7 +669,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				button = createMenuButton(menuPipeTwoListener, lp, R.drawable.ic_pipe_two, "Pipe");
 				linearLayout.addView(button);
 
-				// Create sixth "delete" button
+				// Create "delete" button
 				button = createMenuButton(Remove, lp, R.drawable.delete, "Delete");
 				linearLayout.addView(button);
 				break;
@@ -693,6 +694,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				// Create fourth "Save As" button
 				button = createMenuButton(menuSaveAsListener, lp, R.drawable.ic_menu_save_as, "Save As");
 				linearLayout.addView(button);
+				
 				// Create "Delete File" button
 				button = createMenuButton(menuDeleteFileListener, lp, R.drawable.delete, "Delete" + "\n" + "File");
 				linearLayout.addView(button);
@@ -702,14 +704,14 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				linearLayout.addView(button);
 
 				// Create color scheme button
-				button = createMenuButton(menuSettingsListener, lp, R.drawable.ic_menu_settings, "Color Scheme");
+				button = createMenuButton(colorschemelistener, lp, R.drawable.ic_menu_settings, "Color Scheme");
 				linearLayout.addView(button);
 
 				// Create sixth "re-center" button
 				button = createMenuButton(menuReCenterListener, lp, R.drawable.ic_menu_new, "Re-Center");
 				linearLayout.addView(button);
 
-				// Create fifth "Exit" button
+				// Create "Exit" button
 				button = createMenuButton(menuExitListener, lp, R.drawable.ic_menu_exit, "Exit");
 				linearLayout.addView(button);
 
@@ -1115,7 +1117,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 							}
 						});
 						break;
-					default: // if not above, then assume a pipe
+					default: // else, then assume a pipe
 						currentColor = 3;
 						this.runOnUiThread(new Runnable()
 						{
@@ -1193,6 +1195,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 					{
 						// This layer is touchable
 						((MutablePolygon) child).setTouchableState(true);
+						//resets current color when tab is selected
 						resetCurrentColor(i);
 					} else
 					{
@@ -1539,18 +1542,20 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 	}
 
 	/**
-	 * Method to display the open dialog
+	 * Method to display the delete dialog
 	 */
 	public void deleteDialog()
 	{
+		// pulls in data from blueprint and screenshot directory
 		final File myblueprintdir = new File(Environment.getExternalStorageDirectory(), "/aCAD/blueprints/");
 		final File myscreenshotdir = new File(Environment.getExternalStorageDirectory(), "/aCAD/screenshots/");
 
+		//populates each list
 		final String List1[] = myblueprintdir.list();
 		final String List2[] = myscreenshotdir.list();
 		
+		//combines both arrays into one to display blueprints and files  in one list
 		final String[] array1and2 = new String[List1.length + List2.length];
-
 		for (int i = 0; i < List1.length; i++)
 		{
 			array1and2[i] = List1[i];
@@ -1563,6 +1568,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 			j++;
 		}
 
+		//if there are files, display the list
 		if (array1and2.length > 0)
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1572,6 +1578,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 		builder.setItems(array1and2, new DialogInterface.OnClickListener()
 		{
 
+			//runs when file is clicked
 			@Override
 			public void onClick(DialogInterface dialog, int selection)
 			{
@@ -1591,14 +1598,15 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				}
 			}
 		});
+		//show dialog
 		builder.create();
 		builder.show();
 		} else
-		{
+		{//if no files exist, show toast msg
 			Toast.makeText(ACadEngineActivity.this, "No files were found!", Toast.LENGTH_SHORT).show();
 		}
 	}
-
+ 
 	/**
 	 * Method to display the open dialog
 	 */
@@ -1922,87 +1930,92 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 	 * Export to Png Listener
 	 */
 	View.OnClickListener menuExportToPng = new View.OnClickListener()
-	{
+	{//exports screenshot as png
 		@Override
 		public void onClick(View scrollView)
 		{
 			File mydir = new File(Environment.getExternalStorageDirectory() + "/aCAD/screenshots/");
 
 			if (!mydir.exists())
-			{
+			{//creates directory if it doesn't exist
 				mydir.mkdirs();
 			}
 
+			//appends timestamp to filename for png
 			java.util.Date date = new java.util.Date();
 			String filename = "";
 			String temp = getfileName + "@";
 
+			
 			if (!temp.startsWith("null"))
 				filename = getfileName + " ";
 
+			//replaces :'s with .'s and spaces with underscores
 			String s = new Timestamp(date.getTime()).toString();
 			s = s.replace(":", ".").substring(0, s.length() - 4);
 			s = s.replace(" ", "_").substring(0, s.length() - 4);
 			filename = filename + s;
 
+			//appends extension
 			if (!filename.contains(".png"))
 				filename = filename + ".png";
 
+			//file save toast msg with directory
 			String msg = "Filed Saved: /ACaD/screenshots/" + filename;
 
-			// this method requires root access Process sh = null; try { sh =
-			// Process sh = null;
-			// try
-			// {
-			// sh = Runtime.getRuntime().exec("su", null, null);
-			// } catch (IOException e1)
-			// {
-			// // TODO Auto-generated catch block
-			// e1.printStackTrace();
-			// }
-			// OutputStream os = sh.getOutputStream();
-			// try
-			// {
-			// os.write(("/system/bin/screencap -p " +
-			// "/sdcard/ACaD/screenshots/" +
-			// filename).getBytes("ASCII"));
-			// try{ Thread.sleep(3000); }catch(InterruptedException e){ }
-			// Toast.makeText(ACadEngineActivity.this, msg,
-			// Toast.LENGTH_SHORT).show();
-			// } catch (UnsupportedEncodingException e1)
-			// {
-			// // TODO Auto-generated catch block
-			// e1.printStackTrace();
-			// } catch (IOException e1)
-			// {
-			// // TODO Auto-generated catch block
-			// e1.printStackTrace();
-			// }
-			// try
-			// {
-			// os.flush();
-			// } catch (IOException e1)
-			// {
-			// // TODO Auto-generated catch block
-			// e1.printStackTrace();
-			// }
-			// try
-			// {
-			// os.close();
-			// } catch (IOException e1)
-			// {
-			// // TODO Auto-generated catch block
-			// e1.printStackTrace();
-			// }
-			// try
-			// {
-			// sh.waitFor();
-			// } catch (InterruptedException e1)
-			// {
-			// // TODO Auto-generated catch block
-			// e1.printStackTrace();
-			// }
+			 //this method requires root access Process sh = null; try { sh =
+			 Process sh = null;
+			 try
+			 {
+			 sh = Runtime.getRuntime().exec("su", null, null);
+			 } catch (IOException e1)
+			 {
+			 // TODO Auto-generated catch block
+			 e1.printStackTrace();
+			 }
+			 OutputStream os = sh.getOutputStream();
+			 try
+			 {
+			 os.write(("/system/bin/screencap -p " +
+			 "/sdcard/" +"root" + filename ).getBytes("ASCII"));
+			 try{ Thread.sleep(3000); }catch(InterruptedException e){ }
+			 Toast.makeText(ACadEngineActivity.this, msg,
+			 Toast.LENGTH_SHORT).show();
+			 } catch (UnsupportedEncodingException e1)
+			 {
+			 // TODO Auto-generated catch block
+			 e1.printStackTrace();
+			 } catch (IOException e1)
+			 {
+			 // TODO Auto-generated catch block
+			 e1.printStackTrace();
+			 }
+			 try
+			 {
+			 os.flush();
+			 } catch (IOException e1)
+			 {
+			 // TODO Auto-generated catch block
+			 e1.printStackTrace();
+			 }
+			 try
+			 {
+			 os.close();
+			 } catch (IOException e1)
+			 {
+			 // TODO Auto-generated catch block
+			 e1.printStackTrace();
+			 }
+			 try
+			 {
+			 sh.waitFor();
+			 } catch (InterruptedException e1)
+			 {
+			 // TODO Auto-generated catch block
+			 e1.printStackTrace();
+			 }
 
+			 //this method is partially functional, glitched
 			View view = getWindow().getDecorView().findViewById(android.R.id.content);
 			view.setDrawingCacheEnabled(true);
 			Bitmap screenshot = view.getDrawingCache(false);
@@ -2277,7 +2290,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 	};
 
 	/**
-	 * Exit Button Listener
+	 * Delete Button Listener
 	 */
 	View.OnClickListener menuDeleteFileListener = new View.OnClickListener()
 	{
@@ -2289,7 +2302,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 	};
 
 	/**
-	 * Exit Button Listener
+	 * Re-Center Button Listener
 	 */
 	View.OnClickListener menuReCenterListener = new View.OnClickListener()
 	{
@@ -2310,7 +2323,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 	};
 
 	/**
-	 * hardscape remove
+	 * remove objects listener
 	 */
 	View.OnClickListener Remove = new View.OnClickListener()
 	{
@@ -2333,7 +2346,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 								{
 									@Override
 									public void run()
-									{
+									{//toggles visibility of object
 										((MutablePolygon) childOfLayer).setChildrenVisible(false);
 									}
 								});
@@ -2345,9 +2358,9 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 	};
 
 	/**
-	 * New Button Listener
+	 * ColorScheme Listener
 	 */
-	View.OnClickListener menuSettingsListener = new View.OnClickListener()
+	View.OnClickListener colorschemelistener = new View.OnClickListener()
 	{
 		@Override
 		public void onClick(View scrollView)
@@ -2367,7 +2380,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 							// collection of polygon attributes
 							IEntity childOfLayer = childOfScene.getChildByIndex(j);
 							if (childOfLayer instanceof MutablePolygon)
-							{
+							{//sets outlines to black
 								((MutablePolygon) childOfLayer).populateMeasurements();
 								((MutablePolygon) childOfLayer).populateMeasurements();
 								((MutablePolygon) childOfLayer).outline.setColor(Color.BLACK);
@@ -2377,7 +2390,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 					}
 				}
 			} else
-			{
+			{//sets it back to normal
 				gridLineColorScheme = 0;
 				mainScene.setBackground(new Background(.15f, .16f, .55f));
 				for (int i = 1; i < mainScene.getChildCount(); i++)
@@ -2404,6 +2417,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 		}
 	};
 
+	//resets current shape color
 	public static void resetCurrentColor(int groupID)
 	{
 		if (gridLineColorScheme == 0)

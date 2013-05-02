@@ -138,7 +138,7 @@ public class Grid extends Shape
 			l = new Line(minX, y, maxX, y, vboManager);
 			// set line color? Consider implementing change for dark areas
 			if (socs.acad.ACadEngineActivity.gridLineColorScheme != 0)
-			{
+			{//sets gridcolor depending on gridlinecolorscheme variable
 				l.setColor(.28f, 0f, 0f);
 			} else
 				l.setColor(1f, 1f, 1f, .1f);
@@ -152,7 +152,7 @@ public class Grid extends Shape
 		{
 			l = new Line(x, minY, x, maxY, vboManager);
 			if (socs.acad.ACadEngineActivity.gridLineColorScheme != 0)
-			{
+			{//sets gridcolor depending on gridlinecolorscheme variable
 				l.setColor(.28f, 0f, 0f);
 			} else
 				l.setColor(1f, 1f, 1f, .1f);

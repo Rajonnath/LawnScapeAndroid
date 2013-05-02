@@ -240,6 +240,7 @@ public class MutablePolygon extends Shape
 		outline = new PolyLine(0, 0, outlineVertexX, outlineVertexY, vboManager);
 		outline.setLineWidth(3);
 
+		//sets polygon colo based on currentcolor variable
 		if (ACadEngineActivity.gridLineColorScheme == 0)
 		{
 			switch (ACadEngineActivity.currentColor)
@@ -1020,9 +1021,10 @@ public class MutablePolygon extends Shape
 					t.setPosition(t.getX() - t.getWidth() / 2f, t.getY() - t.getHeight() / 2f);
 					t.setAlpha(0);
 
+					//sets color to black
 					if (ACadEngineActivity.gridLineColorScheme == 0)
 						t.setColor(1f, 1f, 0f);
-					else
+					else//sets it back to normal
 						t.setColor(.88f, .22f, .22f);
 					t.setAlpha(1f);
 
