@@ -6,6 +6,12 @@
  *   - O'Neal Georges
  *   - Corey Pennycuff
  *   - Sri Lasya Brundavanam
+ * MODIFIED BY TEAM CPU AT MIDWESTERN STATE UNIVERSITY
+ *   - Junior Fletcher
+ *   - Veronica McClure
+ *   - Lauren Rios
+ *   - Chase Sawyer
+ *   - Matt Swezey
  */
 package socs.acad;
 

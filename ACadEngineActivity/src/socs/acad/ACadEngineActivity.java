@@ -6,6 +6,12 @@
  *   - O'Neal Georges
  *   - Corey Pennycuff
  *   - Sri Lasya Brundavanam
+ * MODIFIED BY TEAM CPU AT MIDWESTERN STATE UNIVERSITY
+ *   - Junior Fletcher
+ *   - Veronica McClure
+ *   - Lauren Rios
+ *   - Chase Sawyer
+ *   - Matt Swezey
  */
 
 package socs.acad;
@@ -21,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Vector;
@@ -685,6 +690,9 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				button = createMenuButton(menuSaveListener, lp, R.drawable.ic_menu_save, "Save");
 				linearLayout.addView(button);
 
+				// Create fourth "Save As" button
+				button = createMenuButton(menuSaveAsListener, lp, R.drawable.ic_menu_save_as, "Save As");
+				linearLayout.addView(button);
 				// Create "Delete File" button
 				button = createMenuButton(menuDeleteFileListener, lp, R.drawable.delete, "Delete" + "\n" + "File");
 				linearLayout.addView(button);
@@ -707,7 +715,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 
 				break;
 			default:
-
+				break;
 		}
 		linearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 	}
@@ -945,8 +953,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 									public void run()
 									{
 										// This code is run after the OK button
-										// is
-										// clicked
+
 										float halfWidth = dialogWidth / 2;
 										float halfHeight = dialogHeight / 2;
 										// Add the object to the correct layer
@@ -1263,6 +1270,7 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				((MutablePolygon) s).setFont(measurementFont);
 				s.updateVertices(new float[] { -halfWidth, halfWidth, halfWidth, -halfWidth }, new float[] { -halfHeight, -halfHeight, halfHeight, halfHeight });
 				worldLayer.attachChild(s);
+				getfileName = null;
 
 				// The reset cannot be run on this thread.
 				instance.runOnUpdateThread(new Runnable()
@@ -1334,15 +1342,15 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 				{
 					readMutablePolygonJson(reader, layerName);
 					jsons = new MutableLine((float) jsontouchX, (float) jsontouchY, vboManager);
-					((MutablePolygon) jsons).setJSONVertices(jsonXvertex, jsonYvertex);
 					((MutablePolygon) jsons).setFont(measurementFont);
+					((MutablePolygon) jsons).updateVertices(jsonXvertex, jsonYvertex);
 					getLayerEntity(layerName).attachChild(jsons);
 				} else
 				{
 					readMutablePolygonJson(reader, layerName);
 					jsons = new MutableRectangle((float) jsontouchX, (float) jsontouchY, vboManager);
-					((MutablePolygon) jsons).setJSONVertices(jsonXvertex, jsonYvertex);
 					((MutablePolygon) jsons).setFont(measurementFont);
+					((MutablePolygon) jsons).updateVertices(jsonXvertex, jsonYvertex);
 					getLayerEntity(layerName).attachChild(jsons);
 				}
 			}
@@ -1535,16 +1543,30 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 	 */
 	public void deleteDialog()
 	{
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		final File myblueprintdir = new File(Environment.getExternalStorageDirectory(), "/aCAD/blueprints/");
 		final File myscreenshotdir = new File(Environment.getExternalStorageDirectory(), "/aCAD/screenshots/");
-		builder.setTitle("Select a file to delete");
+
 		final String List1[] = myblueprintdir.list();
 		final String List2[] = myscreenshotdir.list();
 		
 		final String[] array1and2 = new String[List1.length + List2.length];
-		System.arraycopy(List1, 0, array1and2, 0, List1.length);
-		System.arraycopy(List2, 0, array1and2, List1.length, List2.length);
+
+		for (int i = 0; i < List1.length; i++)
+		{
+			array1and2[i] = List1[i];
+		}
+
+		int j = 0;
+		for (int i = List1.length; i < List1.length + List2.length; i++)
+		{
+			array1and2[i] = List2[j];
+			j++;
+		}
+
+		if (array1and2.length > 0)
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Select a file to delete");
 		builder.setNegativeButton("Cancel", null);
 
 		builder.setItems(array1and2, new DialogInterface.OnClickListener()
@@ -1555,8 +1577,8 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 			{
 				File file = null;
 				dialog.cancel();
-				deleteChildren();
-				try{
+					try
+					{
 					if(Arrays.asList(List1).contains(array1and2[selection]))
 						file = new File(Environment.getExternalStorageDirectory(), "/aCAD/blueprints/" + array1and2[selection]);
 					else
@@ -1571,6 +1593,10 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 		});
 		builder.create();
 		builder.show();
+		} else
+		{
+			Toast.makeText(ACadEngineActivity.this, "No files were found!", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	/**
@@ -1578,10 +1604,13 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 	 */
 	public void openDialog(final int Inputfrom)
 	{
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		File mydir = new File(Environment.getExternalStorageDirectory(), "/aCAD/blueprints/");
-		builder.setTitle("Select a file to open");
 		final String List[] = mydir.list();
+
+		if (List.length > 0)
+		{
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Select a file to open");
 		builder.setItems(List, new DialogInterface.OnClickListener()
 		{
 
@@ -1641,6 +1670,10 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 		builder.setNegativeButton("Cancel", null);
 		builder.create();
 		builder.show();
+		} else
+		{
+			Toast.makeText(ACadEngineActivity.this, "No files were found!", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	/**
@@ -1930,7 +1963,8 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 			// OutputStream os = sh.getOutputStream();
 			// try
 			// {
-			// os.write(("/system/bin/screencap -p " + "/sdcard/ACaD/screenshots/" +
+			// os.write(("/system/bin/screencap -p " +
+			// "/sdcard/ACaD/screenshots/" +
 			// filename).getBytes("ASCII"));
 			// try{ Thread.sleep(3000); }catch(InterruptedException e){ }
 			// Toast.makeText(ACadEngineActivity.this, msg,
@@ -2181,8 +2215,10 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 					|| landscapeLayer.getChildCount() != 0)
 			{
 				displaySaveAlert();
+			} else
+			{
+				newFile();
 			}
-			newFile();
 		}
 	};
 
@@ -2213,6 +2249,18 @@ public class ACadEngineActivity extends BaseGameActivity implements IOnSceneTouc
 			{
 				saveSceneIterator(getfileName);
 			}
+		}
+	};
+
+	/**
+	 * Save As Button Listener
+	 */
+	View.OnClickListener menuSaveAsListener = new View.OnClickListener()
+	{
+		@Override
+		public void onClick(View scrollView)
+		{
+			saveDialog(0); // 0 for performing no action on the children
 		}
 	};
 

@@ -7,6 +7,12 @@
  *   - O'Neal Georges
  *   - Corey Pennycuff
  *   - Sri Lasya Brundavanam
+ * MODIFIED BY TEAM CPU AT MIDWESTERN STATE UNIVERSITY
+ *   - Junior Fletcher
+ *   - Veronica McClure
+ *   - Lauren Rios
+ *   - Chase Sawyer
+ *   - Matt Swezey
  */
 
 package socs.acad;
@@ -998,6 +1004,8 @@ public class MutablePolygon extends Shape
 					float segmentAngle = (float) Math.atan2(mVertexY[nextVertex] - mVertexY[i], mVertexX[nextVertex] - mVertexX[i]);
 					float perpendicularAngle = segmentAngle - (float) Math.PI / 2;
 					float distanceAway = 14;
+					if (segmentAngle < 45 || segmentAngle > 135)
+						distanceAway = 30;
 					float midpointX = (mVertexX[i] + mVertexX[nextVertex]) / 2;
 					float midpointY = (mVertexY[i] + mVertexY[nextVertex]) / 2;
 					float newX = midpointX + (distanceAway * FloatMath.cos(perpendicularAngle));
@@ -1017,7 +1025,10 @@ public class MutablePolygon extends Shape
 					else
 						t.setColor(.88f, .22f, .22f);
 					t.setAlpha(1f);
-					t.setRotation((float) Math.toDegrees(segmentAngle));
+
+					t.setRotation(0);
+					// this keeps the text
+					// t.setRotation((float) Math.toDegrees(segmentAngle));
 					this.attachChild(t);
 					measurementText[i] = t;
 				}

@@ -5,6 +5,12 @@
  *   - O'Neal Georges
  *   - Corey Pennycuff
  *   - Sri Lasya Brundavanam
+ * MODIFIED BY TEAM CPU AT MIDWESTERN STATE UNIVERSITY
+ *   - Junior Fletcher
+ *   - Veronica McClure
+ *   - Lauren Rios
+ *   - Chase Sawyer
+ *   - Matt Swezey
  */
 package socs.acad;
 
@@ -18,46 +24,49 @@ import org.andengine.opengl.vbo.IVertexBufferObject;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.Constants;
 
-import android.graphics.Color;
-
-public class Grid extends Shape {
+public class Grid extends Shape
+{
 	// World information variables
 	private float width, height;
 	private float oldScale = Float.NaN;
 	protected VertexBufferObjectManager vboManager = null;
-	
+
 	// Where lines are stored
 	private Vector<Line> lines = new Vector<Line>();
-	
+
 	// Local variables related to line placement
 	protected float scale, pixelScale, minX, minY, maxX, maxY;
 
 	/**
 	 * Constructor
 	 */
-	public Grid(float pX, float pY, float width, float height, ShaderProgram pShaderProgram, VertexBufferObjectManager pVertexBufferObjectManager) {
+	public Grid(float pX, float pY, float width, float height, ShaderProgram pShaderProgram, VertexBufferObjectManager pVertexBufferObjectManager)
+	{
 		super(pX, pY, pShaderProgram);
 		vboManager = pVertexBufferObjectManager;
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	/**
 	 * Method ran when the object is attached to a parent.
 	 */
 	@Override
-	public void onAttached() {
+	public void onAttached()
+	{
 		update();
 	}
-	
+
 	/**
 	 * Update the line set based on the parent's info.
 	 */
-	public void update() {
+	public void update()
+	{
 		// First, adjust the scale so that the grid is properly and
 		// proportionally spaced for the current scale
 		scale = this.getParent().getScaleX();
-		if (scale != oldScale) {
+		if (scale != oldScale)
+		{
 			// The scale has changed, so re-draw the lines
 			oldScale = scale;
 
@@ -68,9 +77,10 @@ public class Grid extends Shape {
 
 			// Decide on a scale to show (numbers are in feet).
 			// Decimal numbers will be rendered in inches.
-			float[] suitableScale = {1, 2, 5, 10, 20, 50, 100, 150, 200, 250, 500, 1000};
+			float[] suitableScale = { 1, 2, 5, 10, 20, 50, 100, 150, 200, 250, 500, 1000 };
 			pixelScale = 1;
-			for (int i = 0; i < suitableScale.length && suitableScale[i] * scale < 2.5f; i++) {
+			for (int i = 0; i < suitableScale.length && suitableScale[i] * scale < 2.5f; i++)
+			{
 				pixelScale = suitableScale[i];
 			}
 
@@ -82,14 +92,14 @@ public class Grid extends Shape {
 			minY = -pixelScale;
 			maxX = (width / scale) + pixelScale;
 			maxY = (height / scale) + pixelScale;
-			
+
 			removeLines();
 			populateLines();
-			
+
 			// Update the MapScale
 			ACadEngineActivity.getMapScale().update(1 / scale, pixelScale);
 		}
-		
+
 		// Second, set the position of the grid to fully cover the visible
 		// screen area, while holding the grid placement steady relative to the
 		// objects on the screen.
@@ -99,63 +109,65 @@ public class Grid extends Shape {
 
 		this.setPosition(localX - (localX % pixelScale), localY - (localY % pixelScale));
 	}
-	
+
 	/**
 	 * Remove all lines.
 	 */
-	public void removeLines() {
+	public void removeLines()
+	{
 		int lineCount;
 		// Clear the lines
 		lineCount = lines.size();
-		for (int i = 0; i < lineCount; i++) {
+		for (int i = 0; i < lineCount; i++)
+		{
 			this.detachChild(lines.get(i));
 		}
 		lines.clear();
 	}
-	
-	
+
 	/**
 	 * Populate the lines for the grid.
 	 */
-	public void populateLines() {
+	public void populateLines()
+	{
 		Line l;
 		// Populate the Horizontal
 		float startY = Math.round(minY / pixelScale);
-		for (float y = startY; y < maxY; y += pixelScale) {
+		for (float y = startY; y < maxY; y += pixelScale)
+		{
 			l = new Line(minX, y, maxX, y, vboManager);
-			//set line color? Consider implementing change for dark areas
-			org.andengine.util.color.Color linecolor = null;
-			if(socs.acad.ACadEngineActivity.gridLineColorScheme != 0){
+			// set line color? Consider implementing change for dark areas
+			if (socs.acad.ACadEngineActivity.gridLineColorScheme != 0)
+			{
 				l.setColor(.28f, 0f, 0f);
-			}	
-			else
-				l.setColor(1f,1f,1f,.1f);
-			
+			} else
+				l.setColor(1f, 1f, 1f, .1f);
+
 			this.attachChild(l);
 			lines.add(l);
 		}
 		// Populate the Vertical
 		float startX = Math.round(minX / pixelScale);
-		for (float x = startX; x < maxX; x += pixelScale) {
+		for (float x = startX; x < maxX; x += pixelScale)
+		{
 			l = new Line(x, minY, x, maxY, vboManager);
-			//set line color? Consider implementing change for dark areas
-			org.andengine.util.color.Color linecolor = null;
-			if(socs.acad.ACadEngineActivity.gridLineColorScheme != 0){
+			if (socs.acad.ACadEngineActivity.gridLineColorScheme != 0)
+			{
 				l.setColor(.28f, 0f, 0f);
-			}	
-			else
-				l.setColor(1f,1f,1f,.1f);
-			
+			} else
+				l.setColor(1f, 1f, 1f, .1f);
+
 			this.attachChild(l);
 			lines.add(l);
 		}
 	}
-	
+
 	/**
 	 * Must have for class.
 	 */
 	@Override
-	public boolean collidesWith(IShape pOtherShape) {
+	public boolean collidesWith(IShape pOtherShape)
+	{
 		return false;
 	}
 
@@ -163,7 +175,8 @@ public class Grid extends Shape {
 	 * Must have for class.
 	 */
 	@Override
-	public IVertexBufferObject getVertexBufferObject() {
+	public IVertexBufferObject getVertexBufferObject()
+	{
 		return null;
 	}
 
@@ -171,7 +184,8 @@ public class Grid extends Shape {
 	 * Must have for class.
 	 */
 	@Override
-	public boolean contains(float pX, float pY) {
+	public boolean contains(float pX, float pY)
+	{
 		return false;
 	}
 
@@ -179,6 +193,7 @@ public class Grid extends Shape {
 	 * Must have for class.
 	 */
 	@Override
-	protected void onUpdateVertices() {
+	protected void onUpdateVertices()
+	{
 	}
 }
