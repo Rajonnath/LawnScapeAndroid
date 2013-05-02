@@ -12,13 +12,14 @@ package socs.acad;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
-public class MutableLine extends MutablePolygon {
+public class MutableLine extends MutablePolygon
+{
 
 	/**
 	 * Constructor
 	 */
-	public MutableLine(float pX, float pY,
-			VertexBufferObjectManager pVertexBufferObjectManager) {
+	public MutableLine(float pX, float pY, VertexBufferObjectManager pVertexBufferObjectManager)
+	{
 		super(pX, pY, pVertexBufferObjectManager);
 		isRotatable = false;
 		closedState = false;
@@ -29,20 +30,22 @@ public class MutableLine extends MutablePolygon {
 	 * Called after MutableLine is attached, used to attach display polygon.
 	 */
 	@Override
-	public void onAttached() {
+	public void onAttached()
+	{
 		// Set a default square shape, 120px X 120px (10ft. X 10ft.)
-		mVertexX = new float[]{-60f, 60f};
-		mVertexY = new float[]{0f, 0f};
+		mVertexX = new float[] { -60f, 60f };
+		mVertexY = new float[] { 0f, 0f };
 
 		// Setup the vertex and measurement defaults
 		vertexTouchable = new boolean[mVertexX.length];
 		measurementVisible = new boolean[mVertexX.length];
 		measurement = new float[mVertexX.length];
-		for (int i = 0; i < mVertexX.length; i++) {
+		for (int i = 0; i < mVertexX.length; i++)
+		{
 			vertexTouchable[i] = true;
 			measurementVisible[i] = true;
 		}
-		
+
 		// Add the display shape
 		regenerateShape();
 		regenerateOutline();
